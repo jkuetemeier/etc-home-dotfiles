@@ -141,7 +141,7 @@ backup_file() { # backup an already existing file {{{2
 } # --- }}}2
 
 symlink_src_dst_files() { # symlink all SRC_FILES to DST_FILES {{{2
-# ----------------------
+# -----------------------------------------------------------------
 
   cnt=${#SRC_FILES[@]}
   for (( i = 0; i < cnt; i++)); do
@@ -157,7 +157,7 @@ symlink_src_dst_files() { # symlink all SRC_FILES to DST_FILES {{{2
 } # --- }}}2
 
 check_for() { # check if $1 is installed on system {{{2
-# ----------------------------
+# -----------------------------------------------------
   if [ -z "$1" ]; then
     echo "no programname given to check"
     exit -1
@@ -214,6 +214,18 @@ symlink_src_dst_files
 
 # ===== }}}1
 
+# Zsh {{{1
+# ========
+
+SRC_FILES=( "$SRC/zsh/zshrc" "$SRC/zsh/zsh" "$SRC/zsh/zshenv" )
+DST_FILES=( "$DEST/.zshrc" "$DEST/.zsh" "$DEST/.zshenv" )
+
+# do not require screen - it's replaced with tmux
+check_for 'zsh' 'zsh'
+symlink_src_dst_files
+
+# ===== }}}1
+
 # Vim {{{1
 # ========
 
@@ -222,18 +234,14 @@ SRC_FILES=( "$SRC/vim/vimrc" )
 DST_FILES=( "$DEST/.vimrc" )
 
 check_for 'vim'
-symlink_src_dst_files
-
-# ===== }}}1
-
-# copy {{{1
-exit 0
+check_for 'git'
 
 ###
 # prepare vim directory
 
 vimdir="$DEST/.vim"
 
+# check for backup dir
 if [[ -e $vimdir.$TODAY ]]; then
   read -p "$vimdir.$TODAY already exists... continue?(y/n)" -n 1 -r
   echo    # (optional) move to a new line
@@ -248,8 +256,9 @@ fi
 mkdir -p $vimdir/bundle
 mkdir -p $vimdir/colors
 mkdir -p $vimdir/spell
+mkdir -p $vimdir/view
 
-FILES="$dir/colors/*"
+FILES="$SRC/vim/colors/*"
 
 for rcfile in $FILES; do
   file=${rcfile##*/}
@@ -257,7 +266,7 @@ for rcfile in $FILES; do
   ln -s "$rcfile" "$destination"
 done
 
-FILES="$dir/spell/*"
+FILES="$SRC/vim/spell/*"
 
 for rcfile in $FILES; do
   file=${rcfile##*/}
@@ -265,7 +274,7 @@ for rcfile in $FILES; do
   ln -s "$rcfile" "$destination"
 done
 
-FILES="$dir/vimfiles/*"
+FILES="$SRC/vim/vim/*"
 
 for rcfile in $FILES; do
   file=${rcfile##*/}
@@ -273,12 +282,20 @@ for rcfile in $FILES; do
   ln -s "$rcfile" "$destination"
 done
 
-# copy additinal spell-files
-cp optional/.vim-spell-de.utf-8.add ~/.vim-spell-de.utf-8.add
-cp optional/.vim-spell-en.utf-8.add ~/.vim-spell-en.utf-8.add
+symlink_src_dst_files
 
 git clone https://github.com/gmarik/Vundle.vim.git "$vimdir/bundle/Vundle.vim"
 
 vim +PluginInstall +qall
+
+# ===== }}}1
+
+# TODO:  {{{1
+exit 0
+
+# copy additinal spell-files
+cp optional/.vim-spell-de.utf-8.add ~/.vim-spell-de.utf-8.add
+cp optional/.vim-spell-en.utf-8.add ~/.vim-spell-en.utf-8.add
+
 
 # }}}1
