@@ -1,7 +1,31 @@
+"
+" vim bundles (plugin) configuration file
+" (c) 1998-2015 Joerg Kuetemeier <jk@kuetemeier.net>
+"
+" Licensed under the Apache License, Version 2.0 (the "License");
+" you may not use this file except in compliance with the License.
+" You may obtain a copy of the License at
+"
+"     http://www.apache.org/licenses/LICENSE-2.0
+"
+" Unless required by applicable law or agreed to in writing, software
+" distributed under the License is distributed on an "AS IS" BASIS,
+" WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+" See the License for the specific language governing permissions and
+" limitations under the License.
+
+" Vundle plug-in management {{{1
+" =============================
+
+" Plug-ins are handled by Vundle, the plug-in manager for Vim
+" https://github.com/gmarik/Vundle.vim
+
+" vundle needs the vim mode
 if &compatible
   set nocompatible
 end
 
+" run vundle
 filetype off
 set rtp+=~/.vim/bundle/Vundle.vim/
 call vundle#begin()
@@ -9,7 +33,15 @@ call vundle#begin()
 " Let Vundle manage Vundle
 Plugin 'gmarik/Vundle.vim'
 
-" NERDTree - https://github.com/scrooloose/nerdtree
+" ===== }}}1
+
+" List of active plug-ins {{{1
+" ============================
+
+" NERDTree - A tree explorer plugin for vim {{{2
+" ----------------------------------------------
+" https://github.com/scrooloose/nerdtree
+
 Plugin 'scrooloose/nerdtree'
 
 " show hidden files
@@ -25,35 +57,33 @@ autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 " close Vim if the only window left open is a NERDTree
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
 
-" HTML Editing
+" --- }}}2
+
+" MatchTag - Vim's MatchParen for HTML tags (HTML editing) {{{2
+" -------------------------------------------------------------
+" https://github.com/gregsexton/MatchTag
+
 Plugin 'gregsexton/MatchTag'
 
-" Color Themes
-"Plugin 'sk1418/last256'
-"Plugin 'croaky/vim-colors-github'
-"Plugin 'chriskempson/vim-tomorrow-theme'
-"Plugin 'nanotech/jellybeans.vim'
-"Plugin 'w0ng/vim-hybrid'
-"Plugin 'tomasr/molokai'
+" --- }}}2
 
-"------------------------------------------------------------------------------
-" Tagbar
+" Tagbar - Vim plugin that displays tags in a window, ordered by scope {{{2
+" -------------------------------------------------------------------------
+
 " on Mac: brew install ctag
-"Plugin 'majutsushi/tagbar'
-"nmap <F8> :TagbarToggle<CR>
+Plugin 'majutsushi/tagbar'
+nmap <F8> :TagbarToggle<CR>
 
-"------------------------------------------------------------------------------
-" Airline {{{
-" lean & mean status/tabline for vim that's light as air
+" --- }}}2
+
+" Airline - lean & mean status/tabline for vim that's light as air {{{2
+" ---------------------------------------------------------------------
 
 Plugin 'bling/vim-airline'
 
 set noshowmode
 
 " find themes at: https://github.com/bling/vim-airline/wiki/Screenshots
-" let g:airline_theme='powerlineish'
-" let g:airline_theme='solarized'
-" let g:airline_theme='tomorrow' " works best for hybrid theme
 let g:airline_theme='hybrid' " works best for hybrid theme
 let g:airline_enable_branch=1
 let g:airline_powerline_fonts=1
@@ -64,67 +94,93 @@ let g:airline#extensions#tabline#enabled = 2
 " let g:airline#extensions#tabline#fnamemod = ':t'
 let g:airline#extensions#tabline#buffer_min_count = 2
 
-" }}}
+" --- }}}2
 
-"------------------------------------------------------------------------------
-" snipmate
-"
-"Plugin 'msanders/snipmate.vim'
+" snipMate.vim - TextMate's snippets features in Vim {{{2
+" -------------------------------------------------------
 
-"------------------------------------------------------------------------------
-" Syntastic - Syntax checking hacks for vim {{{
+Plugin 'msanders/snipmate.vim'
 
-"Plugin 'scrooloose/syntastic'
+" --- }}}2
 
-" }}}
+" Syntastic - Syntax checking hacks for vim {{{2
+" ----------------------------------------------
 
-"------------------------------------------------------------------------------
+Plugin 'scrooloose/syntastic'
 
-" CoffeeScript support for vim
+" }}}2
+
+" vim-coffee-script - CoffeeScript support for vim {{{2
+" -----------------------------------------------------
+
 Plugin 'kchmck/vim-coffee-script'
+
+" --- }}}2
+
+" ctrlp.vim - Fuzzy file, buffer, mru, tag, etc finder {{{2
+" ---------------------------------------------------------
 
 Plugin 'kien/ctrlp.vim'
 
 let g:ctrlp_map = '<c-p>'
 let g:ctrlp_cmd = 'CtrlP'
 
-"Plugin 'pbrisbin/vim-mkdir'
-"
-"Plugin 'slim-template/vim-slim'
-"Plugin 'thoughtbot/vim-rspec'
-"Plugin 'tpope/vim-bundler'
-"Plugin 'tpope/vim-endwise'
-"Plugin 'tpope/vim-eunuch'
+" --- }}}2
 
-" fugitive.vim: a Git wrapper so awesome, it should be illegal
+" Fugitive - a Git wrapper so awesome, it should be illegal {{{2
+" --------------------------------------------------------------
+
 " http://www.vim.org/scripts/script.php?script_id=2975
 Plugin 'tpope/vim-fugitive'
 
-"Plugin 'tpope/vim-rails'
-"Plugin 'tpope/vim-repeat'
+" --- }}}2
 
-" surround.vim: quoting/parenthesizing made simple
+" Surround - quoting/parenthesizing made simple {{{2
+" --------------------------------------------------
+
 " http://www.vim.org/scripts/script.php?script_id=1697
-"Plugin 'tpope/vim-surround'
+Plugin 'tpope/vim-surround'
+
+" --- }}}2
+
+" NERDCommenter - Vim plugin for intensely orgasmic commenting {{{2
+" -----------------------------------------------------------------
 
 Plugin 'scrooloose/nerdcommenter'
 
+" --- }}}2
+
+" Emmet-vim - expanding abbreviations similar to emmet {{{2
+" ---------------------------------------------------------
+
 " emmet for vim: http://emmet.io/ http://mattn.github.io/emmet-vim
 Plugin 'mattn/emmet-vim'
+
+" --- }}}2
+
+" GoYo - Zen Editing for vim {{{2
+" -------------------------------
 
 " Zen Editing
 Plugin 'junegunn/goyo.vim'
 Plugin 'amix/vim-zenroom2'
 nnoremap <silent> <leader>z :Goyo<cr>
 
-" Multiple Cursors
+" --- }}}2
+
+" Multiple Cursors - True Sublime Text style multiple selections for Vim {{{2
+" ---------------------------------------------------------------------------
+" https://github.com/terryma/vim-multiple-cursors
+
 Plugin 'terryma/vim-multiple-cursors'
 
-"------------
-" Easy Motion
-" Vim motion on speed!
+" --- }}}
+
+" Easy Motion - Vim motion on speed! {{{2
+" ---------------------------------------
 
 Plugin 'Lokaltog/vim-easymotion'
+
 " Gif config
 "map  / <Plug>(easymotion-sn)
 "omap / <Plug>(easymotion-tn)
@@ -135,14 +191,23 @@ Plugin 'Lokaltog/vim-easymotion'
 "map  n <Plug>(easymotion-next)
 "map  N <Plug>(easymotion-prev)
 
-"Plugin 'vim-ruby/vim-ruby'
-""Plugin 'vim-scripts/ctags.vim'
-"Plugin 'vim-scripts/matchit.zip'
-"Plugin 'vim-scripts/tComment'
+" --- }}}2
+
+" ===== }}}1
+
+" Load local plug-ins {{{1
+" ==================
 
 if filereadable(expand("bundles.local.vim"))
   source bundles.local.vim
 endif
 
+" ===== }}}1
+
+" Vundle END {{{1
+" ===============
+
 call vundle#end()
 filetype on
+
+" ===== }}}1
