@@ -1,4 +1,4 @@
-# jk-etc-home
+# jk-etc-home-dotfiles
 Configuration and dotfiles for zsh, vim, tmux, screen and more... for /etc and ~/ (home) usage
 
 # Installation
