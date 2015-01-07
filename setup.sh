@@ -1,30 +1,40 @@
 #!/usr/bin/env sh
 
-exit 1
+# Script setup {{{1
+# =================
 
-# chdir to script dir
+# chdir to script dir {{{2
+# ------------------------
 dir=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
 cd $dir
+# --- }}}2
 
+# usage message {{{2
+# ------------------
 usage()
 {
 cat << EOF
 usage: $0 options
 
-This script can be installed local ($HOME) or global.
+This script can install the config files local ($HOME) or global.
 
 OPTIONS:
    -h      Show this message
-   -l      install local ($HOME/.jk-sys)
-   -g      install global (/opt/jk-sys)
+   -l      install local ($HOME)
+   -g      install global (/etc)
    -v      Verbose
 
 EOF
 }
+# --- }}}2
+
+# get commandline options {{{2
+# ----------------------------
 
 GLOBAL=
 LOCAL=
 VERBOSE=
+NAME=jk-etc-home-dotfiles
 
 while getopts “ghlv” OPTION
 do
@@ -48,6 +58,10 @@ case $OPTION in
      ;;
 esac
 done
+# --- }}}2
+
+# calculate requirements {{{2
+# ---------------------------
 
 if [[ -z $GLOBAL ]] && [[ -z $LOCAL ]]; then
   usage
@@ -62,9 +76,9 @@ fi
 
 if [[ -n $VERBOSE ]]; then
   if [[ -n $GLOBAL ]]; then
-    echo "vim - starting global install..."
+    echo "$NAME - starting global install..."
   else 
-    echo "vim - starting local install..."
+    echo "$NAME - starting local install..."
   fi
 fi
 
@@ -73,16 +87,7 @@ if [[ -n $VERBOSE ]]; then
   echo "Detected User: $LOGNAME"
 fi
 
-VIM=`which vim`
-if [[ ! $VIM =~ 'vim' ]]; then 
-  echo "no vim found, perhaps you should try to install it."
-  exit -1
-fi
-
-if [[ -n $VERBOSE ]]; then
-  echo "vim found at: $VIM"
-fi
-
+SRC=$dir
 DEST=$HOME
 
 if [[ -n $GLOBAL ]]; then
@@ -91,37 +96,138 @@ if [[ -n $GLOBAL ]]; then
   exit -1
 fi
 
-
-TODAY=`date +%Y%m%d`
-FILES="$dir/dotfiles/*"
-
 MVARG=
 if [[ -n $VERBOSE ]]; then
   MVARG=-v
 fi
 
-####
-# link all files in ./dotfiles to $HOME or /etc
-# backup files that are already there
+TODAY=`date +%Y%m%d`
+# --- }}}2
 
-for rcfile in $FILES; do
-  # split path and file name
-  file=${rcfile##*/}
-  DESTFILE=
-  if [[ -n $GLOBAL ]]; then
-    DESTFILE="$DEST/$file"
-  else
-    DESTFILE="$DEST/.$file"
+# ===== }}}1
+
+# Helper functions {{{1
+# =====================
+
+list() { # for debug listing {{{2
+# -------------------------------
+  cnt=${#SRC_FILES[@]}
+  for (( i = 0; i < cnt; i++)); do
+    s=${SRC_FILES[i]}
+    d=${DST_FILES[i]}
+    echo "$s -> $d"
+  done
+} # --- }}}2
+
+backup_file() { # backup an already existing file {{{2
+# ----------------------------------------------------
+# backup_file "filename"
+# the file "filename" will be moved to "filename.$TODAY"
+
+  if [ -z "$1" ]; then
+    echo "no filename given to backup"
+    exit -1
   fi
+
   if [[ -z $NOBACKUP ]]; then
-    if [[ -n $VERBOSE ]]; then
-      [ -e $DESTFILE ] && echo "backing up $DESTFILE"
-    fi
+    if [ -e $1 ]; then
+      if [[ -n $VERBOSE ]]; then
+        echo "creating backup file:"
+      fi
 
-    [ -e $DESTFILE ] && mv $MVARG $DESTFILE $DESTFILE.$TODAY
+      mv $MVARG $d $d.$TODAY
+    fi
   fi
-  ln -s "$rcfile" $DESTFILE
-done
+} # --- }}}2
+
+symlink_src_dst_files() { # symlink all SRC_FILES to DST_FILES {{{2
+# ----------------------
+
+  cnt=${#SRC_FILES[@]}
+  for (( i = 0; i < cnt; i++)); do
+    s=${SRC_FILES[i]}
+    d=${DST_FILES[i]}
+
+    backup_file $s
+    if [[ -n $VERBOSE ]]; then
+      echo "linking $s to $d"
+    fi
+    ln -s "$s" "$d"
+  done
+} # --- }}}2
+
+check_for() { # check if $1 is installed on system {{{2
+# ----------------------------
+  if [ -z "$1" ]; then
+    echo "no programname given to check"
+    exit -1
+  fi
+
+  # do we have a name string as second parameter? defaults to $1
+  if [ -z "$2" ]; then
+    name="$1"
+  else
+    name="$1"
+  fi
+
+  if [ -z "$3" ]; then
+    optional=""
+  else
+    optional="$1"
+  fi
+
+  prog=`which "$1"`
+  if [[ ! $prog =~ "$1" ]]; then
+    echo "no $name found, perhaps you should try to install it first."
+    if [[ -z $optional ]]; then
+      exit -1
+    fi
+  else
+    if [[ -n $VERBOSE ]]; then
+      echo "$name found at: $prog"
+    fi
+  fi
+} # }}}2
+
+# ===== }}}1
+
+# Tmux {{{1
+# =========
+
+SRC_FILES=( "$SRC/tmux/tmux.conf" )
+DST_FILES=( "$DEST/.tmux.conf" )
+
+check_for 'tmux' 'TMux'
+symlink_src_dst_files
+
+# ===== }}}1
+
+# Screen {{{1
+# ===========
+
+SRC_FILES=( "$SRC/screen/screenrc" )
+DST_FILES=( "$DEST/.screenrc" )
+
+# do not require screen - it's replaced with tmux
+check_for 'screen' 'Screen' 1
+symlink_src_dst_files
+
+# ===== }}}1
+
+# Vim {{{1
+# ========
+
+#FILES="$dir/dotfiles/*"
+SRC_FILES=( "$SRC/vim/vimrc" )
+DST_FILES=( "$DEST/.vimrc" )
+
+check_for 'vim'
+symlink_src_dst_files
+
+# ===== }}}1
+
+# copy {{{1
+exit 0
 
 ###
 # prepare vim directory
@@ -175,3 +281,4 @@ git clone https://github.com/gmarik/Vundle.vim.git "$vimdir/bundle/Vundle.vim"
 
 vim +PluginInstall +qall
 
+# }}}1
