@@ -9,6 +9,19 @@ git clone https://github.com/jkuetemeier/jk-etc-home-dotfiles.git
 ./setup.sh -l -v
 ```
 
+## Backup files
+
+```
+# go to install dir
+cd ~
+
+# list all created backup files
+ls -d .*.[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]
+
+# delete all created backup files - BE CAREFULL!!!
+ls -d .*.[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9] | xargs rm -rf
+```
+
 # License
 
 (c) 1998-2015 Jörg Kütemeier <jk@kuetemeier.net>
