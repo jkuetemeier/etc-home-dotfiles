@@ -182,6 +182,8 @@ set showmatch     " When a bracket is inserted, briefly jump to the matching
                   " screen. The time to show the match can be set with
                   " 'matchtime'.
 
+set ttyfast       " optimize for fast terminal connections
+
 " ===== }}}1
 
 " Tab<Key> and whitespaces {{{1
@@ -319,31 +321,39 @@ vnoremap Q gq
 " Folding {{{1
 " =============================================================================
 
-set foldmethod=marker
+if has('folding')
 
-set foldenable
+  " fold on the marker
+  set foldmethod=marker
 
-set foldcolumn=7
+  " turn on folding
+  set foldenable
 
-function! NeatFoldText() "{{{2
-" ----------------------------
-  let line = ' ' . substitute(getline(v:foldstart), '^\s*"\?\s*\|\s*"\?\s*{{' . '{\d*\s*', '', 'g') . ' '
-  let lines_count = v:foldend - v:foldstart + 1
-  let lines_count_text = '| ' . printf("%10s", lines_count . ' lines') . ' |'
-  let foldchar = matchstr(&fillchars, 'fold:\zs.')
-  let foldtextstart = strpart('+' . repeat(foldchar, v:foldlevel*2) . line, 0, (winwidth(0)*2)/3)
-  let foldtextend = lines_count_text . repeat(foldchar, 8)
-  let foldtextlength = strlen(substitute(foldtextstart . foldtextend, '.', 'x', 'g')) + &foldcolumn
-  return foldtextstart . repeat(foldchar, winwidth(0)-foldtextlength) . foldtextend
-endfunction
-set foldtext=NeatFoldText()
-" --- }}}2
+  " A column with the specified width is shown at the side of the window
+  " which indicates open and closed folds.
+  " set foldcolumn=3
 
-augroup Folding
-  " Folding / save and reload folding on buffer close and load
-  au BufWinLeave ?* mkview
-  au BufWinEnter ?* silent loadview
-augroup END
+  " autofold anything (but I can still fold manually).
+  "  set foldlevel=0
+
+  " Specify the movements which open folds.
+  set foldopen=block,hor,mark,percent,quickfix,tag
+
+  function! NeatFoldText() "{{{2
+  " ----------------------------
+    let line = ' ' . substitute(getline(v:foldstart), '^\s*"\?\s*\|\s*"\?\s*{{' . '{\d*\s*', '', 'g') . ' '
+    let lines_count = v:foldend - v:foldstart + 1
+    let lines_count_text = '| ' . printf("%10s", lines_count . ' lines') . ' |'
+    let foldchar = matchstr(&fillchars, 'fold:\zs.')
+    let foldtextstart = strpart('+' . repeat(foldchar, v:foldlevel*2) . line, 0, (winwidth(0)*2)/3)
+    let foldtextend = lines_count_text . repeat(foldchar, 8)
+    let foldtextlength = strlen(substitute(foldtextstart . foldtextend, '.', 'x', 'g')) + &foldcolumn
+    return foldtextstart . repeat(foldchar, winwidth(0)-foldtextlength) . foldtextend
+  endfunction
+  set foldtext=NeatFoldText()
+  " --- }}}2
+
+endif
 
 " ===== }}}1
 
@@ -553,12 +563,34 @@ augroup END
 
 " ===== }}}1
 
-" Load local config {{{1
+" Load local config, autosave settings per file and window {{{1
 " =============================================================================
 
+" save some configurations per file and window {{{2
+" -------------------------------------------------
+
+" the settings are saved under .vim/views - you can savely delete this files to
+" reset the file/window specific settings
+
+" save cursor position in file and window
+set viewoptions+=cursor
+" save manually created folds, opened/closed folds and local fold options
+set viewoptions+=folds
+" don't save options and mappings local to window and buffer
+set viewoptions-=options
+augroup AutoSaveLoadViewConfig
+  " Folding / save and reload folding on buffer close and load
+  au BufWinLeave ?* mkview
+  au BufWinEnter ?* silent loadview
+augroup END
+" --- }}}2
+
+" load local settings {{{2
+" ------------------------
 if filereadable($HOME . "/.vimrc.local")
   source ~/.vimrc.local
 endif
+" --- }}}2
 
 " ===== }}}1
 
@@ -570,6 +602,7 @@ endif
 " Links:
 " https://wiki.archlinux.org/index.php/vim/.vimrc
 " https://github.com/tpope/tpope/blob/master/.vimrc
+" https://github.com/joshuaspence/dotfiles/tree/master/home/vim/
 "
 " and many more...
 
