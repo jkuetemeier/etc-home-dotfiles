@@ -1,0 +1,578 @@
+"
+" vim configuration file
+" (c) 1998-2015 Joerg Kuetemeier <jk@kuetemeier.net>
+"
+" Licensed under the Apache License, Version 2.0 (the "License");
+" you may not use this file except in compliance with the License.
+" You may obtain a copy of the License at
+"
+"     http://www.apache.org/licenses/LICENSE-2.0
+"
+" Unless required by applicable law or agreed to in writing, software
+" distributed under the License is distributed on an "AS IS" BASIS,
+" WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+" See the License for the specific language governing permissions and
+" limitations under the License.
+
+
+" Basic settings {{{1
+" =============================================================================
+
+" Use Vim settings, rather then Vi settings.
+" This setting must be as early as possible, as it has side effects.
+set nocompatible
+
+" auto reload .vimrc if it is changed
+autocmd! bufwritepost .vimrc source %
+
+" Leader
+let mapleader = ","
+
+set encoding=utf-8  " specify default encoding
+
+set fileencodings=ucs-bom,utf-8,default,latin1
+
+set fileformats=unix,dos,mac
+
+set list            " visualize break ($) or tab (^|)
+
+set backspace=2     " Influences the working of <BS>, <Del>, CTRL-W
+                    " and CTRL-U in Insert mode. This is a list of items,
+                    " separated by commas. Each item allows a way to backspace
+                    " over something.
+
+set nobackup        " don't create backup files
+
+set nowritebackup
+
+"set noswapfile     " disabled to dected double edit
+
+set history=200
+
+set undolevels=200
+
+set ruler           " Show the line and column number of the cursor position,
+                    " separated by a comma.
+
+set showcmd         " display incomplete commands
+
+set laststatus=2    " Always display the status line
+
+set autowrite       " Automatically :write before running commands
+
+set autoread        " Watch for file changes
+
+set mouse=a         " Enable the use of the mouse
+
+" Movement {{{2
+" -------------
+
+" have the h and l cursor keys wrap between lines (like <Space> and <BkSpc> do
+" by default), and ~ covert case over line breaks; also have the cursor keys
+" wrap in insert mode:
+set whichwrap=h,l,~,[,]
+
+" use <Ctrl>+N/<Ctrl>+P to cycle through files:
+nnoremap <C-N> :next<CR>
+nnoremap <C-P> :prev<CR>
+
+" --- }}}2
+
+" Syntax highlighting {{{2
+" ------------------------
+" Switch syntax highlighting on, when the terminal has colors
+" Also switch on highlighting the last used search pattern.
+if (&t_Co > 2 || has("gui_running")) && !exists("syntax_on")
+  syntax on " Vim5 and later versions support syntax highlighting
+endif
+" --- }}}2
+
+" Load Plug-Ins {{{2
+" ------------------
+if filereadable(expand("~/.vim/bundles.vim"))
+  source ~/.vim/bundles.vim
+endif
+" --- }}}2
+
+" Have Vim load indentation rules according to the detected filetype.
+if has("autocmd")
+  filetype plugin indent on
+endif
+
+" indent modes {{{2
+" -----------------
+
+" don't automatically indent lines
+" set noautoindent
+"set smartindent  # depricated over cindent
+set cindent
+
+"  turn of for this files:
+autocmd BufEnter *.html setlocal indentexpr=
+autocmd BufEnter *.htm setlocal indentexpr=
+autocmd BufEnter *.xml setlocal indentexpr=
+autocmd BufEnter *.xsd setlocal indentexpr=
+" --- }}}2
+
+" Search configuration {{{2
+" -------------------------
+" Make search case insensitive
+set hlsearch        " When there is a previous search pattern, highlight all
+                    " its matches.
+
+set incsearch       " While typing a search command, show immediately where the
+                    " so far typed pattern matches.
+
+set ignorecase      " Ignore case in search patterns.
+
+set smartcase       " Override the 'ignorecase' option if the search pattern
+                    " contains upper case characters.
+" --- }}}2
+
+" configure syntastic syntax checking to check on open as well as save
+let g:syntastic_check_on_open=1
+let g:syntastic_html_tidy_ignore_errors=[" proprietary attribute \"ng-"]
+
+" Better copy & paste {{{2
+" ------------------------
+" Paste Mode On/Off
+" :set paste / :set no paste
+map <F2> :call Paste_on_off()<CR>
+set pastetoggle=<F2>
+set clipboard=unnamed
+
+let paste_mode = 0 " 0 = normal, 1 = paste
+
+func! Paste_on_off()
+  if g:paste_mode == 0
+    set paste
+    set nolist
+    let g:paste_mode = 1
+  else
+    set nopaste
+    set list
+    let g:paste_mode = 0
+  endif
+  return
+endfunc
+" --- }}}2
+
+" map sort function to a key
+vnoremap <Leader>s :sort<CR>
+
+" use 'ag' insteat of 'grep' {{{2
+" Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
+if executable('ag')
+  " Use Ag over Grep
+  set grepprg=ag\ --nogroup\ --nocolor
+
+  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
+  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+
+  " ag is fast enough that CtrlP doesn't need to cache
+  let g:ctrlp_use_caching = 0
+endif
+" }}}2
+
+" Treat <li> and <p> tags like the block tags they are
+let g:html_indent_tags = 'li\|p'
+
+set showmatch     " When a bracket is inserted, briefly jump to the matching
+                  " one. The jump is only done if the match can be seen on the
+                  " screen. The time to show the match can be set with
+                  " 'matchtime'.
+
+" ===== }}}1
+
+" Tab<Key> and whitespaces {{{1
+" =============================================================================
+
+" Tab handling {{{2
+" -----------------
+" Softtabs, 2 spaces
+set tabstop=2     " Number of spaces that a <Tab> in the file counts for
+set shiftwidth=2  " Number of spaces to use for each step of (auto)indent
+set shiftround
+set expandtab     " Use the appropriate number of spaces to insert a <Tab>.
+                  " Spaces are used in indents with the '>' and '<' commands
+                  " and when 'autoindent' is on. To insert a real tab when
+                  " 'expandtab' is on, use CTRL-V <Tab>.
+" --- }}}2
+
+" Display extra whitespace {{{2
+" -----------------------------
+set list listchars=tab:»·,trail:·
+" --- }}}2
+
+" Tab completion {{{2
+" -------------------
+" will insert tab at beginning of line,
+" will use completion if not at beginning
+set wildmode=list:longest,list:full
+function! InsertTabWrapper()
+    let col = col('.') - 1
+    if !col || getline('.')[col - 1] !~ '\k'
+        return "\<tab>"
+    else
+        return "\<c-p>"
+    endif
+endfunction
+inoremap <Tab> <c-r>=InsertTabWrapper()<cr>
+inoremap <S-Tab> <c-n>
+" --- }}}2
+
+"make < > shifts keep selection
+vnoremap < <gv
+vnoremap > >gv
+
+" ===== }}}1
+
+" Spell checking {{{1
+" =============================================================================
+
+" Activate spell checking {{{2
+" ----------------------------
+if has("spell")
+  " turn spelling on by default
+  " set spell
+
+  " toggle spelling with F4 key
+  map <F4> :set spell!<CR><Bar>:echo "Spell Check: " . strpart("OffOn", 3 * &spell, 3)<CR>
+
+  " they were using white on white
+  highlight PmenuSel ctermfg=black ctermbg=lightgray
+
+  " limit it to just the top 10 items
+  set sps=best,10
+endif
+" --- }}}2
+
+" Spellfile location {{{2
+" -----------------------
+" Set spellfile to location that is guaranteed to exist, can be symlinked to
+" Dropbox or kept in Git and managed outside of thoughtbot/dotfiles using rcm.
+set spellfile=$HOME/.vim-spell-en.utf-8.add
+" --- }}}2
+
+" ===== }}}1
+
+" Mappings {{{1
+" =============================================================================
+
+" Remapping of german keys {{{2
+" -----------------------------
+map <silent> Ü [
+inoremap <silent> Ü [
+map <silent> ö :
+inoremap <silent> ö :
+map <silent> Ä ]
+inoremap <silent> Ä ]
+map <silent> ü {
+map <silent> ä }
+inoremap <silent> ü {
+inoremap <silent> ä }
+noremap <silent> ß /
+inoremap <silent> ß /
+" --- }}}2
+
+" additional ESC sequences for mode changes {{{2
+" ----------------------------------------------
+inoremap <silent> jj <esc>
+inoremap <silent> jk <esc>
+" inoremap <silent> jkk jk
+nnoremap <silent> <leader>. :
+" for local config: remind me to use jj or jk inplace of ESC
+"inoremap <silent> <esc> :echoe "Use jj"<CR>
+" --- }}}2
+
+" key combinations to genereate german umlauts {{{2
+" -------------------------------------------------
+inoremap <silent> o" ö
+inoremap <silent> a" ä
+inoremap <silent> u" ü
+inoremap <silent> O" Ö
+inoremap <silent> A" Ä
+inoremap <silent> U" Ü
+" --- }}}2
+
+" Run commands that require an interactive shell
+nnoremap <silent> <Leader>r :RunInInteractiveShell<space>
+
+" Quick quit command
+noremap <Leader>e :quit<CR> " Quit current window
+noremap <Leader>E :qa!<CR>  " Quit all windows
+
+" Make Y behave like other capitals
+map Y y$
+
+" easier formatting of paragraphs {{{2
+" ------------------------------------
+vmap Q gq
+nmap Q gqap
+" have Q reformat the current paragraph (or selected text if there is any):
+vnoremap Q gqqp
+vnoremap Q gq
+" --- }}}2
+
+" ===== }}}1
+
+" Folding {{{1
+" =============================================================================
+
+set foldmethod=marker
+
+set foldenable
+
+set foldcolumn=7
+
+function! NeatFoldText() "{{{2
+" ----------------------------
+  let line = ' ' . substitute(getline(v:foldstart), '^\s*"\?\s*\|\s*"\?\s*{{' . '{\d*\s*', '', 'g') . ' '
+  let lines_count = v:foldend - v:foldstart + 1
+  let lines_count_text = '| ' . printf("%10s", lines_count . ' lines') . ' |'
+  let foldchar = matchstr(&fillchars, 'fold:\zs.')
+  let foldtextstart = strpart('+' . repeat(foldchar, v:foldlevel*2) . line, 0, (winwidth(0)*2)/3)
+  let foldtextend = lines_count_text . repeat(foldchar, 8)
+  let foldtextlength = strlen(substitute(foldtextstart . foldtextend, '.', 'x', 'g')) + &foldcolumn
+  return foldtextstart . repeat(foldchar, winwidth(0)-foldtextlength) . foldtextend
+endfunction
+set foldtext=NeatFoldText()
+" --- }}}2
+
+augroup Folding
+  " Folding / save and reload folding on buffer close and load
+  au BufWinLeave ?* mkview
+  au BufWinEnter ?* silent loadview
+augroup END
+
+" ===== }}}1
+
+" Window Configurations {{{1
+" =============================================================================
+
+" Open new split panes to right and bottom, which feels more natural {{{2
+" -----------------------------------------------------------------------
+set splitbelow
+set splitright
+" --- }}}2
+
+" Quicker window movement {{{2
+" ----------------------------
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-h> <C-w>h
+nnoremap <C-l> <C-w>l
+" --- }}}2
+
+" Resize windows {{{2
+" -------------------
+" You can use the command :resize +5 or :res -5 to resize windows
+" this are just quick shortcuts
+nnoremap <silent> <Leader>+ :exe "resize " . (winheight(0) * 3/2)<CR>
+nnoremap <silent> <Leader>- :exe "resize " . (winheight(0) * 2/3)<CR>
+" --- }}}2
+
+" ===== }}}1
+
+" Vim-Tab Configurations {{{1
+" =============================================================================
+
+" Easier moving between tabs
+map <Leader>n <esc>:tabprevious<CR>
+map <Leader>m <esc>:tabnext<CR>
+
+" ===== }}}1
+
+" GUI and Interface configuration {{{1
+"=============================================================================
+
+set background=dark " When set to "dark", Vim will try to use colors that look
+                    " good on a dark background. When set to "light", Vim will
+                    " try to use colors that look good on a light background.
+                    " Any other value is illegal.
+
+" GUI Font {{{2
+"--------------
+" some inspirations:
+"set guifont=Menlo:h12
+"set guifont=Monaco:h12
+"set guifont=Monospace:h12
+"set guifont=Droid\ Sans\ Mono\ for\ Powerline:h13
+"set guifont=Source\ Code\ Pro\ for\ Powerline:h13
+" my favorite font
+set guifont=Inconsolata-g\ for\ Powerline:h13
+" --- }}}2
+
+" Color scheme {{{2
+"------------------
+colorscheme hybrid
+highlight NonText guibg=#060606
+highlight Folded  guibg=#0A0A0A guifg=#9090D0
+" --- }}}2
+
+" Disable bell (beep) and flashing screen
+set noerrorbells visualbell t_vb=
+autocmd GUIEnter * set visualbell t_vb=
+
+" Always use vertical diffs
+set diffopt+=vertical
+
+set fillchars=vert:\┃,diff:⎼,fold:⎼
+
+" Make it obvious where 80 characters is {{{2
+" -------------------------------------------
+set textwidth=79 " width of document (used by gd)
+set colorcolumn=+1
+set nowrap " don't automatically wrap on load
+set fo-=t  " don't automatically wrap text when typing
+highlight ColorColumn ctermbg=233
+" --- }}}2
+
+" Show line numbers {{{2
+" ----------------------
+set number " show line numbers
+set numberwidth=5
+" --- }}}2
+
+" set normal background color to "none"
+hi Normal ctermbg=NONE
+
+" ===== }}}1
+
+" Tmux support {{{1
+" =============================================================================
+
+
+" Automatic window renaming {{{2
+" ------------------------------
+" source:
+" http://dhruvasagar.com/2013/11/26/vim-for-multiple-projects-in-tmux-windows
+augroup Tmux
+  au!
+
+  autocmd VimEnter,BufNewFile,BufReadPost * call system('tmux rename-window "vim - ' . split(substitute(getcwd(), $HOME, '~', ''), '/')[-1] . '"')
+  autocmd VimLeave * call system('tmux rename-window ' . split(substitute(getcwd(), $HOME, '~', ''), '/')[-1])
+augroup END
+" --- }}}2
+
+" ===== }}}1
+
+" Experimental Stuff {{{1
+" =============================================================================
+" This section is for experimental stuff and config options that need more
+" testing.
+
+" vim-rspec map <silent>pings
+nnoremap <silent> <Leader>t :call RunCurrentSpecFile()<CR>
+nnoremap <silent> <Leader>s :call RunNearestSpec()<CR>
+nnoremap <silent> <Leader>l :call RunLastSpec()<CR>
+
+" Exclude Javascript files in :Rtags via rails.vim due to warnings when parsing
+"let g:Tlist_Ctags_Cmd="ctags --exclude='*.js'"
+
+" Index ctags from any project, including those outside Rails
+" map <Leader>ct :!ctags -R .<CR>
+
+" set cmdheight=2
+
+" Switch between the last two files {{{2
+" --------------------------------------
+"nnoremap <leader><leader> <c-^>
+" --- }}}2
+
+"if filereadable($HOME . "/.vim/filetypes.vim")
+"  source ~/.vim/filetypes.vim
+"endif
+
+" set viewoptions=folds,localoptions,cursor
+
+" ===== }}}1
+
+" Autocommands / Filetypes {{{1
+" =============================================================================
+
+" Default Autocommands {{{2
+" -------------------------
+" group autocmd's to give vim a chance to overwrite them when it resources
+" this config file.
+" http://learnvimscriptthehardway.stevelosh.com/chapters/14.html
+augroup vimrcEx
+  " clear group
+  autocmd!
+
+  " When editing a file, always jump to the last known cursor position.
+  " Don't do it for commit messages, when the position is invalid, or when
+  " inside an event handler (happens when dropping a file on gvim).
+  autocmd BufReadPost *
+    \ if &ft != 'gitcommit' && line("'\"") > 0 && line("'\"") <= line("$") |
+    \   exe "normal g`\"" |
+    \ endif
+
+  " Cucumber navigation commands
+  autocmd User Rails Rnavcommand step features/step_definitions -glob=**/* -suffix=_steps.rb
+  autocmd User Rails Rnavcommand config config -glob=**/* -suffix=.rb -default=routes
+
+  " Set syntax highlighting for specific file types
+  autocmd BufRead,BufNewFile Appraisals set filetype=ruby
+  autocmd BufRead,BufNewFile *.md set filetype=markdown
+
+  " Enable spellchecking for Markdown
+  autocmd FileType markdown setlocal spell
+
+  " Automatically wrap at 80 characters for Markdown
+  autocmd BufRead,BufNewFile *.md setlocal textwidth=80
+
+  " Allow stylesheets to autocomplete hyphenated words
+  autocmd FileType css,scss,sass setlocal iskeyword+=-
+
+  " help section - disable spellcheck and quit with 'q'
+  autocmd FileType help setlocal ai fo+=2n | silent! setlocal nospell
+  autocmd FileType help nnoremap <silent><buffer> q :q<CR>
+
+  autocmd FileType git,gitcommit setlocal foldmethod=syntax foldlevel=1
+  autocmd FileType gitcommit setlocal spell
+augroup END
+" --- }}}2
+
+" ===== }}}1
+
+" Inspirations for local config {{{1
+" =============================================================================
+" this stuff is (or will be no longer) activated in global config,
+" but you can put it into your .vimrc.local
+
+
+" remap arrow keys to train movement with h,l,k,j {{{2
+" ----------------------------------------------------
+"nnoremap <Left> :echoe "Use h"<CR>
+"nnoremap <Right> :echoe "Use l"<CR>
+"nnoremap <Up> :echoe "Use k"<CR>
+"nnoremap <Down> :echoe "Use j"<CR>
+" --- }}}2
+
+
+" ===== }}}1
+
+" Load local config {{{1
+" =============================================================================
+
+if filereadable($HOME . "/.vimrc.local")
+  source ~/.vimrc.local
+endif
+
+" ===== }}}1
+
+" Thanks to... and more information at: {{{1
+" =============================================================================
+
+" Thanks to the default vimrc files from Debian, Ubuntu and CentOS
+
+" Links:
+" https://wiki.archlinux.org/index.php/vim/.vimrc
+" https://github.com/tpope/tpope/blob/master/.vimrc
+"
+" and many more...
+
+" ===== }}}1
+
+" vim: fdm=marker tw=79 ts=2:
