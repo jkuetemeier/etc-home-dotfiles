@@ -231,6 +231,7 @@ export TZ='Europe/Berlin'
 
 alias l="ls -la"
 alias v="$EDITOR"
+alias vi=vim
 
 alias gitignore="curl -O https://gist.githubusercontent.com/jkuetemeier/98900a7ea5e9e419687e/raw/1560c82e611fa2c2fbea59882f8292ecad9a3551/.gitignore"
 
