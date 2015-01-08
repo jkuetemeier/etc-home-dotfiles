@@ -210,8 +210,8 @@ check_for() { # check if $1 is installed on system {{{2
 # Tmux {{{1
 # =========
 
-SRC_FILES=( "$SRC/tmux/tmux.conf" )
-DST_FILES=( "$DEST/.tmux.conf" )
+SRC_FILES=( "$SRC/tmux/tmux.conf" "$SRC/tmux/tmux-osx.conf" )
+DST_FILES=( "$DEST/.tmux.conf" "$DEST/.tmux-osx.conf")
 
 check_for 'tmux' 'TMux'
 symlink_src_dst_files
