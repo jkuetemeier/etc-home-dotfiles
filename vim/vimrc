@@ -337,7 +337,7 @@ if has('folding')
   "  set foldlevel=0
 
   " Specify the movements which open folds.
-  set foldopen=block,hor,mark,percent,quickfix,tag
+  set foldopen=block,hor,mark,percent,quickfix,tag,search
 
   function! NeatFoldText() "{{{2
   " ----------------------------
