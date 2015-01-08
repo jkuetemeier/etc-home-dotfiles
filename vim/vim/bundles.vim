@@ -224,6 +224,13 @@ Plugin 'marijnh/tern_for_vim'
 
 " --- }}}
 
+" vim-gitgutter - shows a git diff in the gutter {{{2
+" ---------------------------------------
+
+Plugin 'airblade/vim-gitgutter'
+
+" --- }}}2
+
 " ===== }}}1
 
 " Load local plug-ins {{{1
