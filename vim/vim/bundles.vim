@@ -108,6 +108,12 @@ Plugin 'msanders/snipmate.vim'
 
 Plugin 'scrooloose/syntastic'
 
+" This does what it says on the tin. It will check your file on open too, not just on save.
+" You might not want this, so just leave it out if you don't.
+let g:syntastic_check_on_open=1
+
+" npm install -g jshint
+
 " }}}2
 
 " vim-coffee-script - CoffeeScript support for vim {{{2
@@ -192,6 +198,31 @@ Plugin 'Lokaltog/vim-easymotion'
 "map  N <Plug>(easymotion-prev)
 
 " --- }}}2
+
+" JavaScript plug-ins {{{2
+" ------------------------
+
+" better JavaScript editing
+" http://oli.me.uk/2013/06/29/equipping-vim-for-javascript/
+
+Plugin 'jelera/vim-javascript-syntax'
+Plugin 'pangloss/vim-javascript'
+Plugin 'nathanaelkane/vim-indent-guides'
+Plugin 'Raimondi/delimitMate'
+" imap <C-c> <CR><Esc>O
+
+" These are the tweaks I apply to YCM's config, you don't need them but they might help.
+" YCM gives you popups and splits by default that some people might not like, so these should tidy it up a bit for you.
+let g:ycm_add_preview_to_completeopt=0
+let g:ycm_confirm_extra_conf=0
+set completeopt-=preview
+
+Plugin 'marijnh/tern_for_vim'
+
+
+
+
+" --- }}}
 
 " ===== }}}1
 

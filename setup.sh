@@ -304,6 +304,8 @@ git clone https://github.com/gmarik/Vundle.vim.git "$vimdir/bundle/Vundle.vim"
 
 vim +PluginInstall +qall
 
+cd "$vimdir/bundle/tern_for_vim" && npm install
+
 # ===== }}}1
 
 # TODO:  {{{1
