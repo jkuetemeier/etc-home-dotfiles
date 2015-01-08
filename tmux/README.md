@@ -1,0 +1,11 @@
+# Tmux Configuration
+
+This is my Tmux configuration, tested on Mac OS X, Fedora and CentOS.
+
+## Making the clipboard work
+
+The files includes some hacks for enabling the clipboard in OS X. A very good
+reference can be found here:
+http://evertpot.com/osx-tmux-vim-copy-paste-clipboard/
+
+
