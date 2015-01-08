@@ -22,9 +22,38 @@ ls -d .*.[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]
 ls -d .*.[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9] | xargs rm -rf
 ```
 
+
+# Requirements
+
+## Mac OSX
+
+```shell
+
+# Homebrew (http://brew.sh)
+ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+# vim 7.4
+brew install vim
+
+# Node.js
+brew install node
+
+# install essential Node modules (not required)
+node/setup.sh
+
+# Tmux
+brew install tmux
+
+# Ctags
+brew install ctags
+
+# reattach-to-user-namespace (for clipboard support)
+brew install reattach-to-user-namespace
+```
+
 # License
 
-(c) 1998-2015 Jörg Kütemeier <jk@kuetemeier.net>
+&copy; 1998-2015 Jörg Kütemeier &lt;jk@kuetemeier.net&gt;
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
