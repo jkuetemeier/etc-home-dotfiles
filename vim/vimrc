@@ -331,7 +331,7 @@ if has('folding')
 
   " A column with the specified width is shown at the side of the window
   " which indicates open and closed folds.
-  " set foldcolumn=3
+  set foldcolumn=1
 
   " autofold anything (but I can still fold manually).
   "  set foldlevel=0
@@ -345,7 +345,7 @@ if has('folding')
     let lines_count = v:foldend - v:foldstart + 1
     let lines_count_text = '| ' . printf("%10s", lines_count . ' lines') . ' |'
     let foldchar = matchstr(&fillchars, 'fold:\zs.')
-    let foldtextstart = strpart('+' . repeat(foldchar, v:foldlevel*2) . line, 0, (winwidth(0)*2)/3)
+    let foldtextstart = strpart('' . repeat(foldchar, v:foldlevel*2) . line, 0, (winwidth(0)*2)/3)
     let foldtextend = lines_count_text . repeat(foldchar, 8)
     let foldtextlength = strlen(substitute(foldtextstart . foldtextend, '.', 'x', 'g')) + &foldcolumn
     return foldtextstart . repeat(foldchar, winwidth(0)-foldtextlength) . foldtextend
