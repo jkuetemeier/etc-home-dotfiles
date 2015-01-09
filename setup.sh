@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 # setup script for jk-etc-home-dotfiles
 # (c) 1998-2015 Joerg Kuetemeier <jk@kuetemeier.net>
