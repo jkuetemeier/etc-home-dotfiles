@@ -33,7 +33,10 @@ ls -d .*.[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9] | xargs rm -rf
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
 # vim 7.4
-brew install vim
+brew install vim --with-lua --HEAD
+
+# MacVim (with lua support)
+brew install macvim --with-cscope --with-lua --HEAD
 
 # Node.js
 brew install node
