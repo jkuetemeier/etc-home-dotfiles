@@ -1,7 +1,9 @@
-"
+" Modeline and Notes {
+" vim: set sw=2 ts=2 sts=2 et tw=79 fmr={,} fdm=marker:
+
 " vim configuration file
 " (c) 1998-2015 Joerg Kuetemeier <jk@kuetemeier.net>
-"
+
 " Licensed under the Apache License, Version 2.0 (the "License");
 " you may not use this file except in compliance with the License.
 " You may obtain a copy of the License at
@@ -14,177 +16,228 @@
 " See the License for the specific language governing permissions and
 " limitations under the License.
 
+" }
 
-" Basic settings {{{1
+" Environment {
+
+  " Identify platform {
+    silent function! OSX()
+      return has('macunix')
+    endfunction
+    silent function! LINUX()
+      return has('unix') && !has('macunix') && !has('win32unix')
+    endfunction
+    silent function! WINDOWS()
+      return  (has('win16') || has('win32') || has('win64'))
+    endfunction
+  " }
+
+  " Basics {
+    set nocompatible        " Must be first line
+      if !WINDOWS()
+        set shell=/bin/sh
+      endif
+  " }
+
+  " Windows Compatible {
+    " On Windows, also use '.vim' instead of 'vimfiles'; this makes synchronization
+    " across (heterogeneous) systems easier.
+    if WINDOWS()
+      set runtimepath=$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after
+    endif
+  " }
+
+" }
+
+" Use before config if available {
+    if filereadable(expand("~/.vimrc.before"))
+        source ~/.vimrc.before
+    endif
+" }
+
+" Basic settings {
 " =============================================================================
 
-" Use Vim settings, rather then Vi settings.
-" This setting must be as early as possible, as it has side effects.
-set nocompatible
+  " Use Vim settings, rather then Vi settings.
+  " This setting must be as early as possible, as it has side effects.
+  set nocompatible
 
-" auto reload .vimrc if it is changed
-autocmd! bufwritepost .vimrc source %
+  " auto reload .vimrc if it is changed
+  autocmd! bufwritepost .vimrc source %
 
-" Leader
-let mapleader = ","
+  " Leader
+  let mapleader = ","
 
-set encoding=utf-8  " specify default encoding
+  set encoding=utf-8  " specify default encoding
 
-set fileencodings=ucs-bom,utf-8,default,latin1
+  set fileencodings=ucs-bom,utf-8,default,latin1
 
-set fileformats=unix,dos,mac
+  set fileformats=unix,dos,mac
 
-set list            " visualize break ($) or tab (^|)
+  set list            " visualize break ($) or tab (^|)
 
-set backspace=2     " Influences the working of <BS>, <Del>, CTRL-W
-                    " and CTRL-U in Insert mode. This is a list of items,
-                    " separated by commas. Each item allows a way to backspace
-                    " over something.
+  set backspace=2     " Influences the working of <BS>, <Del>, CTRL-W
+                      " and CTRL-U in Insert mode. This is a list of items,
+                      " separated by commas. Each item allows a way to backspace
+                      " over something.
 
-set nobackup        " don't create backup files
+  set nobackup        " don't create backup files
 
-set nowritebackup
+  set nowritebackup
 
-"set noswapfile     " disabled to dected double edit
+  "set noswapfile     " disabled to dected double edit
 
-set history=200
+  set history=200
 
-set undolevels=200
+  set undolevels=200
 
-set ruler           " Show the line and column number of the cursor position,
-                    " separated by a comma.
+  set ruler           " Show the line and column number of the cursor position,
+                      " separated by a comma.
 
-set showcmd         " display incomplete commands
+  set showcmd         " display incomplete commands
 
-set laststatus=2    " Always display the status line
+  set laststatus=2    " Always display the status line
 
-set autowrite       " Automatically :write before running commands
+"  set autowrite       " Automatically :write before running commands
 
-set autoread        " Watch for file changes
+  set autoread        " Watch for file changes
 
-set mouse=a         " Enable the use of the mouse
+  set mouse=a         " Enable the use of the mouse
+  set mousehide       " Hide the mouse cursor while typing
 
-" Movement {{{2
-" -------------
+  " Movement {
 
-" have the h and l cursor keys wrap between lines (like <Space> and <BkSpc> do
-" by default), and ~ covert case over line breaks; also have the cursor keys
-" wrap in insert mode:
-set whichwrap=h,l,~,[,]
+    " have the h and l cursor keys wrap between lines (like <Space> and <BkSpc>
+    " do by default), and ~ covert case over line breaks; also have the cursor
+    " keys wrap in insert mode:
+    set whichwrap=h,l,~,[,]
 
-" use <Ctrl>+N/<Ctrl>+P to cycle through files:
-nnoremap <C-N> :next<CR>
-nnoremap <C-P> :prev<CR>
+    " use <Ctrl>+N/<Ctrl>+P to cycle through files:
+    nnoremap <C-N> :next<CR>
+    nnoremap <C-P> :prev<CR>
 
-" --- }}}2
+  " }
 
-" Syntax highlighting {{{2
-" ------------------------
-" Switch syntax highlighting on, when the terminal has colors
-" Also switch on highlighting the last used search pattern.
-if (&t_Co > 2 || has("gui_running")) && !exists("syntax_on")
-  syntax on " Vim5 and later versions support syntax highlighting
-endif
-" --- }}}2
+  " Syntax highlighting {
 
-" Load Plug-Ins {{{2
-" ------------------
-if filereadable(expand("~/.vim/bundles.vim"))
-  source ~/.vim/bundles.vim
-endif
-" --- }}}2
+    " Switch syntax highlighting on, when the terminal has colors
+    " Also switch on highlighting the last used search pattern.
+    if (&t_Co > 2 || has("gui_running")) && !exists("syntax_on")
+      syntax on " Vim5 and later versions support syntax highlighting
+    endif
 
-" Have Vim load indentation rules according to the detected filetype.
-if has("autocmd")
-  filetype plugin indent on
-endif
+  " }
 
-" indent modes {{{2
-" -----------------
+  " Load Plug-Ins {
 
-" don't automatically indent lines
-" set noautoindent
-"set smartindent  # depricated over cindent
-set cindent
+    if filereadable(expand("~/.vim/bundles.vim"))
+      source ~/.vim/bundles.vim
+    endif
 
-"  turn of for this files:
-autocmd BufEnter *.html setlocal indentexpr=
-autocmd BufEnter *.htm setlocal indentexpr=
-autocmd BufEnter *.xml setlocal indentexpr=
-autocmd BufEnter *.xsd setlocal indentexpr=
-" --- }}}2
+  " }
 
-" Search configuration {{{2
-" -------------------------
-" Make search case insensitive
-set hlsearch        " When there is a previous search pattern, highlight all
-                    " its matches.
-
-set incsearch       " While typing a search command, show immediately where the
-                    " so far typed pattern matches.
-
-set ignorecase      " Ignore case in search patterns.
-
-set smartcase       " Override the 'ignorecase' option if the search pattern
-                    " contains upper case characters.
-" --- }}}2
-
-" configure syntastic syntax checking to check on open as well as save
-let g:syntastic_check_on_open=1
-let g:syntastic_html_tidy_ignore_errors=[" proprietary attribute \"ng-"]
-
-" Better copy & paste {{{2
-" ------------------------
-" Paste Mode On/Off
-" :set paste / :set no paste
-map <F2> :call Paste_on_off()<CR>
-set pastetoggle=<F2>
-set clipboard=unnamed
-
-let paste_mode = 0 " 0 = normal, 1 = paste
-
-func! Paste_on_off()
-  if g:paste_mode == 0
-    set paste
-    set nolist
-    let g:paste_mode = 1
-  else
-    set nopaste
-    set list
-    let g:paste_mode = 0
+  " Have Vim load indentation rules according to the detected filetype.
+  if has("autocmd")
+    filetype plugin indent on
   endif
-  return
-endfunc
-" --- }}}2
 
-" map sort function to a key
-vnoremap <Leader>s :sort<CR>
+  " indent modes {
 
-" use 'ag' insteat of 'grep' {{{2
-" Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
-if executable('ag')
-  " Use Ag over Grep
-  set grepprg=ag\ --nogroup\ --nocolor
+    " don't automatically indent lines
+    " set noautoindent
+    "set smartindent  # depricated over cindent
+    set cindent
 
-  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+    "  turn of for this files:
+    autocmd BufEnter *.html setlocal indentexpr=
+    autocmd BufEnter *.htm setlocal indentexpr=
+    autocmd BufEnter *.xml setlocal indentexpr=
+    autocmd BufEnter *.xsd setlocal indentexpr=
 
-  " ag is fast enough that CtrlP doesn't need to cache
-  let g:ctrlp_use_caching = 0
-endif
-" }}}2
+  " }
 
-" Treat <li> and <p> tags like the block tags they are
-let g:html_indent_tags = 'li\|p'
+  " Search configuration {
 
-set showmatch     " When a bracket is inserted, briefly jump to the matching
-                  " one. The jump is only done if the match can be seen on the
-                  " screen. The time to show the match can be set with
-                  " 'matchtime'.
+  " Make search case insensitive
+    set hlsearch        " When there is a previous search pattern, highlight all
+                        " its matches.
 
-set ttyfast       " optimize for fast terminal connections
+    set incsearch       " While typing a search command, show immediately where the
+                        " so far typed pattern matches.
 
-" ===== }}}1
+    set ignorecase      " Ignore case in search patterns.
+
+    set smartcase       " Override the 'ignorecase' option if the search pattern
+                        " contains upper case characters.
+  " }
+
+  " configure syntastic syntax checking to check on open as well as save
+  let g:syntastic_check_on_open=1
+  let g:syntastic_html_tidy_ignore_errors=[" proprietary attribute \"ng-"]
+
+  " Better copy & paste {
+
+    " Paste Mode On/Off
+    " :set paste / :set no paste
+    map <F2> :call Paste_on_off()<CR>
+    set pastetoggle=<F2>
+
+      if has('clipboard')
+        if has('unnamedplus')  " When possible use + register for copy-paste
+          set clipboard=unnamed,unnamedplus
+        else         " On mac and Windows, use * register for copy-paste
+          set clipboard=unnamed
+        endif
+      endif
+
+    let paste_mode = 0 " 0 = normal, 1 = paste
+
+    func! Paste_on_off()
+      if g:paste_mode == 0
+        set paste
+        set nolist
+        let g:paste_mode = 1
+      else
+        set nopaste
+        set list
+        let g:paste_mode = 0
+      endif
+      return
+    endfunc
+
+    " Yank from the cursor to the end of the line, to be consistent
+    " with C and D.
+    nnoremap Y y$
+  " }
+
+  " map sort function to a key
+  vnoremap <Leader>s :sort<CR>
+
+  " use 'ag' insteat of 'grep' {{{2
+  " Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
+  if executable('ag')
+    " Use Ag over Grep
+    set grepprg=ag\ --nogroup\ --nocolor
+
+    " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
+    let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+
+    " ag is fast enough that CtrlP doesn't need to cache
+    let g:ctrlp_use_caching = 0
+  endif
+  " }}}2
+
+  " Treat <li> and <p> tags like the block tags they are
+  let g:html_indent_tags = 'li\|p'
+
+  set showmatch     " When a bracket is inserted, briefly jump to the matching
+                    " one. The jump is only done if the match can be seen on the
+                    " screen. The time to show the match can be set with
+                    " 'matchtime'.
+
+  set ttyfast       " optimize for fast terminal connections
+
+" ===== }
 
 " Tab<Key> and whitespaces {{{1
 " =============================================================================
@@ -210,7 +263,7 @@ set list listchars=tab:»·,trail:·
 " -------------------
 " will insert tab at beginning of line,
 " will use completion if not at beginning
-set wildmode=list:longest,list:full
+"set wildmode=list:longest,list:full
 function! InsertTabWrapper()
     let col = col('.') - 1
     if !col || getline('.')[col - 1] !~ '\k'
@@ -219,8 +272,8 @@ function! InsertTabWrapper()
         return "\<c-p>"
     endif
 endfunction
-inoremap <Tab> <c-r>=InsertTabWrapper()<cr>
-inoremap <S-Tab> <c-n>
+"inoremap <Tab> <c-r>=InsertTabWrapper()<cr>
+"inoremap <S-Tab> <c-n>
 " --- }}}2
 
 "make < > shifts keep selection
@@ -318,44 +371,57 @@ vnoremap Q gq
 
 " ===== }}}1
 
-" Folding {{{1
+" Folding {
 " =============================================================================
 
-if has('folding')
+  if has('folding')
 
-  " fold on the marker
-  set foldmethod=marker
+    " fold on the marker
+    set foldmethod=marker
 
-  " turn on folding
-  set foldenable
+    " turn on folding
+    set foldenable
 
-  " A column with the specified width is shown at the side of the window
-  " which indicates open and closed folds.
-  set foldcolumn=1
+    " A column with the specified width is shown at the side of the window
+    " which indicates open and closed folds.
+    set foldcolumn=1
 
-  " autofold anything (but I can still fold manually).
-  "  set foldlevel=0
+    " autofold anything (but I can still fold manually).
+    "  set foldlevel=0
 
-  " Specify the movements which open folds.
-  set foldopen=block,hor,mark,percent,quickfix,tag,search
+    " Specify the movements which open folds.
+    set foldopen=block,hor,mark,percent,quickfix,tag,search
 
-  function! NeatFoldText() "{{{2
-  " ----------------------------
-    let line = ' ' . substitute(getline(v:foldstart), '^\s*"\?\s*\|\s*"\?\s*{{' . '{\d*\s*', '', 'g') . ' '
-    let lines_count = v:foldend - v:foldstart + 1
-    let lines_count_text = '| ' . printf("%10s", lines_count . ' lines') . ' |'
-    let foldchar = matchstr(&fillchars, 'fold:\zs.')
-    let foldtextstart = strpart('' . repeat(foldchar, v:foldlevel*2) . line, 0, (winwidth(0)*2)/3)
-    let foldtextend = lines_count_text . repeat(foldchar, 8)
-    let foldtextlength = strlen(substitute(foldtextstart . foldtextend, '.', 'x', 'g')) + &foldcolumn
-    return foldtextstart . repeat(foldchar, winwidth(0)-foldtextlength) . foldtextend
-  endfunction
-  set foldtext=NeatFoldText()
-  " --- }}}2
+    function! NeatFoldText() " {{{2
+      " let line = ' ' . substitute(getline(v:foldstart), '^\s*"\?\s*\|\s*"\?\s*{{' . '{\d*\s*', '', 'g') . ' '
+      let line = ' ' . substitute(getline(v:foldstart), '^\s*"\?\s*\|\s*"\?\s*{' . '\d*\s*', '', 'g') . ' '
+      let lines_count = v:foldend - v:foldstart + 1
+      let lines_count_text = '| ' . printf("%10s", lines_count . ' lines') . ' |'
+      let foldchar = matchstr(&fillchars, 'fold:\zs.')
+      let foldtextstart = strpart('' . repeat(foldchar, v:foldlevel*2) . line, 0, (winwidth(0)*2)/3)
+      let foldtextend = lines_count_text . repeat(foldchar, 8)
+      let foldtextlength = strlen(substitute(foldtextstart . foldtextend, '.', 'x', 'g')) + &foldcolumn
+      return foldtextstart . repeat(foldchar, winwidth(0)-foldtextlength) . foldtextend
+    endfunction
+    " }}}2
 
-endif
+    set foldtext=NeatFoldText()
 
-" ===== }}}1
+    " Code folding options
+    nmap <leader>f0 :set foldlevel=0<CR>
+    nmap <leader>f1 :set foldlevel=1<CR>
+    nmap <leader>f2 :set foldlevel=2<CR>
+    nmap <leader>f3 :set foldlevel=3<CR>
+    nmap <leader>f4 :set foldlevel=4<CR>
+    nmap <leader>f5 :set foldlevel=5<CR>
+    nmap <leader>f6 :set foldlevel=6<CR>
+    nmap <leader>f7 :set foldlevel=7<CR>
+    nmap <leader>f8 :set foldlevel=8<CR>
+    nmap <leader>f9 :set foldlevel=9<CR>
+
+  endif
+
+" }
 
 " Window Configurations {{{1
 " =============================================================================
@@ -415,9 +481,11 @@ set guifont=Inconsolata-g\ for\ Powerline:h13
 
 " Color scheme {{{2
 "------------------
-colorscheme hybrid
+" colorscheme hybrid
+" colorscheme monokain
+colorscheme jk
 highlight NonText guibg=#060606
-highlight Folded  guibg=#0A0A0A guifg=#9090D0
+"highlight Folded  guibg=#0A0A0A guifg=#9090D0
 " --- }}}2
 
 " Disable bell (beep) and flashing screen
@@ -446,6 +514,27 @@ set numberwidth=5
 
 " set normal background color to "none"
 hi Normal ctermbg=NONE
+
+" hide and show GUI elements (scrollbar, iconbar etc.)
+function! ToggleGUICruft()
+  if &guioptions=='i'
+    exec('set guioptions=imTrL')
+  else
+    exec('set guioptions=i')
+  endif
+endfunction
+
+map <F7> <Esc>:call ToggleGUICruft()<cr>
+
+" by default, hide gui menus
+set guioptions=i
+
+set cursorline                  " Highlight current line
+
+highlight clear SignColumn      " SignColumn should match background
+" highlight clear LineNr          " Current line number row will have same background color in relative mode
+highlight clear CursorLineNr    " Remove highlight color from current line number
+highlight CursorLineNr ctermbg=233
 
 " ===== }}}1
 
@@ -607,5 +696,3 @@ endif
 " and many more...
 
 " ===== }}}1
-
-" vim: fdm=marker tw=79 ts=2:
