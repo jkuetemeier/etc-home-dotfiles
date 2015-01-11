@@ -70,12 +70,6 @@ export LS_COLORS='rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;
 # ls color opitons for mac (bsd) - default osx
 export LSCOLORS=exfxcxdxbxegedabagacad
 
-# history settings
-setopt hist_ignore_all_dups inc_append_history
-HISTFILE=~/.zhistory
-HISTSIZE=4096
-SAVEHIST=4096
-
 # awesome cd movements from zshkit
 setopt autocd autopushd pushdminus pushdsilent pushdtohome cdablevars
 DIRSTACKSIZE=5
@@ -162,32 +156,28 @@ setopt no_beep correct complete_in_word correct rm_star_wait
 # history
 
 export HISTFILE=~/.zsh_history
-export SAVEHIST=10000
-export HISTSIZE=12000
+export HISTSIZE=4096
+export SAVEHIST=4096
 
 setopt append_history           # use history for multiple zsh instances
 setopt extended_history         # puts timestamps in the history
 setopt hist_allow_clobber
 setopt hist_reduce_blanks       # remov unneeded blanks
 setopt inc_append_history
-setopt share_history
 setopt hist_no_store            # commands like history or fc are no longer stored
 setopt hist_ignore_all_dups     # no duplicated entries like ls,cd,pwd etc.
-setopt hist_ignore_space        # do not save commands with leading space in history
-
-
-setopt hist_ignore_space      # Do not remember commands starting with space
-setopt share_history          # Share history among sessions
-setopt hist_verify            # Reload full command when runing from history
-setopt hist_expire_dups_first # Remove dups when max size reached
-setopt list_types             # Show ls -F style marks in file completion
-setopt long_list_jobs         # Show pid in bg job list
-setopt numeric_glob_sort      # When globbing numbered files, use real counting
-setopt no_hist_beep           # Don not beep on history expansion errors
-setopt hist_reduce_blanks     # Reduce whitespace in history
-setopt interactive_comments   # Comments in history
-setopt inc_append_history     # Append to history once executed
-setopt prompt_subst           # Prompt more dynamic, allow function in prompt
+setopt hist_ignore_space        # Do not remember commands starting with space
+setopt share_history            # Share history among sessions
+setopt hist_verify              # Reload full command when runing from history
+setopt hist_expire_dups_first   # Remove dups when max size reached
+setopt list_types               # Show ls -F style marks in file completion
+setopt long_list_jobs           # Show pid in bg job list
+setopt numeric_glob_sort        # When globbing numbered files, use real counting
+setopt no_hist_beep             # Don not beep on history expansion errors
+setopt hist_reduce_blanks       # Reduce whitespace in history
+setopt interactive_comments     # Comments in history
+setopt inc_append_history       # Append to history once executed
+setopt prompt_subst             # Prompt more dynamic, allow function in prompt
 
 
 #bindkey '^r' history-incremental-search-backward
@@ -218,8 +208,6 @@ zle -N down-line-or-beginning-search
 bindkey '\e[A' up-line-or-beginning-search
 bindkey '\e[B' down-line-or-beginning-search
 
-
-
 # Report to me when other people login/logout
 watch=(notme)
 
@@ -232,37 +220,54 @@ export TZ='Europe/Berlin'
 alias l="ls -la"
 alias v="$EDITOR"
 alias vi=vim
+alias vg=mvim
 
 alias gitignore="curl -O https://gist.githubusercontent.com/jkuetemeier/98900a7ea5e9e419687e/raw/1560c82e611fa2c2fbea59882f8292ecad9a3551/.gitignore"
 
-#----
-#
-# tmux - session
-
-alias ta='tmux attach -t'
-alias ts='tmux new-session -s'
-alias tl='tmux list-sessions'
-
-# Only run if tmux is actually installed
-if which tmux &> /dev/null
-  then
-
-  # Determine if the terminal supports 256 colors
-  if [[ `tput colors` == "256" ]]
-  then
-    export TERM=screen-256color
-  else
-    export TERM=xterm-color
-  fi
-
-  # Autostart if not already in tmux and enabled.
-  if [[ ! -n "$TMUX" ]]
-  then
-#    ts default
-#    (tmux ls | grep attached && tmux -2 at) || tmux -2 new-session -s `hostname -s`
-  fi
+# Determine if the terminal supports 256 colors
+if [[ `tput colors` == "256" ]]; then
+  export TERM=screen-256color
+else
+  export TERM=xterm-color
 fi
 
+# Only run if tmux is actually installed
+if which tmux &> /dev/null; then
+
+  # some aliases
+  alias ta='tmux attach -t'
+  alias ts='tmux new-session -s'
+  alias tl='tmux list-sessions'
+
+  # Auto Start a Tmux session when zsh starts {{{
+  # inspired by
+  # https://github.com/clvv/oh-my-zsh/blob/master/modules/tmux/init.zsh
+
+  if [[ -z "$TMUX" ]] && zstyle -t ':jk:tmux' auto-start; then
+    tmux_session='#JK'
+
+    if ! tmux has-session -t "$tmux_session" 2> /dev/null; then
+      # Disable the destruction of unattached sessions globally.
+      tmux set-option -g destroy-unattached off &> /dev/null
+
+      # Create a new session.
+      tmux new-session -d -s "$tmux_session"
+
+      # Disable the destruction of the new, unattached session.
+      tmux set-option -t "$tmux_session" destroy-unattached off &> /dev/null
+
+      # Enable the destruction of unattached sessions globally to prevent
+      # an abundance of open, detached sessions.
+      tmux set-option -g destroy-unattached on &> /dev/null
+    fi
+
+    exec tmux new-session -t "$tmux_session"
+  fi
+  # }}}
+
+fi
+
+# Sublime Text aliases
 alias subl2="'/Applications/Sublime Text 2.app/Contents/SharedSupport/bin/subl'"
 alias subl="'/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl'"
 
