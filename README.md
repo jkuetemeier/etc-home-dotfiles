@@ -1,6 +1,14 @@
 # jk-etc-home-dotfiles
 Configuration and dotfiles for zsh, vim, tmux, screen and more... for /etc and ~/ (home) usage
 
+## Detailed informations
+
+For details on the included configuration files, see the README files in the
+subdirectories:
+
+- [zsh](zsh/README.md)
+- [tmux](tmux/README.md)
+
 # Installation
 
 ```shell
