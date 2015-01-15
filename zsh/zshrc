@@ -441,6 +441,7 @@ COLOR_D='\e[38;5;103m'
 #PROMPT='%{$fg[$NCOLOR]%}%B%n%b%{$reset_color%}:%{$fg[blue]%}%B%2/%b%{$reset_color%} $(git_prompt_info)%(!.#.$) '
 #PROMPT='%{$fg[$NCOLOR]%}%B%n%b%{$reset_color%}:$COLOR_D %%B%2/%b%{$reset_color%} $(git_prompt_info)%(!.#.$) '
 #RPROMPT='[%*]'
+
 export PROMPT=$'%(?..%{\e[41;38m%}%B-%?-%b%{\e[0m%} )%(1j.%{\e[01;33m%}[%j] .)%{$fg[$NCOLOR]%}%n%{\e[01;33m%}@%{\e[01;36m%}%m%{\e[0m%} %{\e[01;33m%}%2~%{\e[0m%}$(git_prompt_info)%{${fg[default]}%} %B%#%b '
 
 # git theming
@@ -457,14 +458,104 @@ if [ -e /usr/local/bin/gls ]; then alias ls="gls --color='auto'"; fi
 
 # show vim status
 # http://zshwiki.org/home/examples/zlewidgets
-function zle-line-init zle-keymap-select {
-    RPS1="${${KEYMAP/vicmd/-- NORMAL --}/(main|viins)/-- INSERT --}"
-    RPS2=$RPS1
-    zle reset-prompt
-}
-zle -N zle-line-init
-zle -N zle-keymap-select
+# function zle-line-init zle-keymap-select {
+#     RPS1="${${KEYMAP/vicmd/-- NORMAL --}/(main|viins)/-- INSERT --}"
+#     RPS2=$RPS1
+#     zle reset-prompt
+# }
+# zle -N zle-line-init
+# zle -N zle-keymap-select
 
+
+# prezto settings
+
+# Set the Prezto modules to load (browse modules).
+# The order matters.
+zstyle ':prezto:load' pmodule \
+  'prompt' #\
+#  'git'
+
+  # 'environment' \
+  # 'terminal' \
+  # 'editor' \
+  # 'history' \
+  # 'directory' \
+  # 'spectrum' \
+  # 'utility' \
+  # 'completion' \
+# Set the prompt theme to load.
+# Setting it to 'random' loads a random theme.
+# Auto set to 'off' on dumb terminals.
+zstyle ':prezto:module:prompt' theme 'sorin'
+#
+# Module Loader
+#
+
+# Loads Prezto modules. (modified)
+function pmodload {
+  local -a pmodules
+  local pmodule
+  local pfunction_glob='^([_.]*|prompt_*_setup|README*)(-.N:t)'
+
+  # $argv is overridden in the anonymous function.
+  pmodules=("$argv[@]")
+
+  # Add functions to $fpath.
+  fpath=(${pmodules:+${ZDOTDIR:-$HOME}/.zsh/modules/${^pmodules}/functions(/FN)} $fpath)
+
+  function {
+    local pfunction
+
+    # Extended globbing is needed for listing autoloadable function directories.
+    setopt LOCAL_OPTIONS EXTENDED_GLOB
+
+    # Load Prezto functions.
+    for pfunction in ${ZDOTDIR:-$HOME}/.zsh/modules/${^pmodules}/functions/$~pfunction_glob; do
+      autoload -Uz "$pfunction"
+    done
+  }
+
+  # Load Prezto modules.
+  for pmodule in "$pmodules[@]"; do
+    if zstyle -t ":prezto:module:$pmodule" loaded 'yes' 'no'; then
+      continue
+    elif [[ ! -d "${ZDOTDIR:-$HOME}/.zsh/modules/$pmodule" ]]; then
+      print "$0: no such module: $pmodule" >&2
+      continue
+    else
+      if [[ -s "${ZDOTDIR:-$HOME}/.zsh/modules/$pmodule/init.zsh" ]]; then
+        source "${ZDOTDIR:-$HOME}/.zsh/modules/$pmodule/init.zsh"
+      fi
+
+      if (( $? == 0 )); then
+        zstyle ":prezto:module:$pmodule" loaded 'yes'
+      else
+        # Remove the $fpath entry.
+        fpath[(r)${ZDOTDIR:-$HOME}/.zsh/modules/${pmodule}/functions]=()
+
+        function {
+          local pfunction
+
+          # Extended globbing is needed for listing autoloadable function
+          # directories.
+          setopt LOCAL_OPTIONS EXTENDED_GLOB
+
+          # Unload Prezto functions.
+          for pfunction in ${ZDOTDIR:-$HOME}/.zsh/modules/$pmodule/functions/$~pfunction_glob; do
+            unfunction "$pfunction"
+          done
+        }
+
+        zstyle ":prezto:module:$pmodule" loaded 'no'
+      fi
+    fi
+  done
+}
+
+# Load Prezto modules.
+zstyle -a ':prezto:load' pmodule 'pmodules'
+pmodload "$pmodules[@]"
+unset pmodules
 
 #----
 

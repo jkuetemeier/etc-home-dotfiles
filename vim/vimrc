@@ -20,6 +20,15 @@
 
 " Environment {
 
+  " Read local and fork pre file {
+    if filereadable(expand('~/.vimrc.pre.fork'))
+      source ~/.vimrc.pre.fork
+    endif
+
+    if filereadable(expand('~/.vimrc.pre.local'))
+      source ~/.vimrc.pre.local
+    endif
+
   " Identify platform {
     silent function! OSX()
       return has('macunix')
@@ -58,6 +67,13 @@
 " Basic settings {
 " =============================================================================
 
+  " Read sensible common vim settings {
+  " https://github.com/tpope/vim-sensible
+      if filereadable(expand("~/.vim/sensible.vim"))
+          source ~/.vim/sensible.vim
+      endif
+  " }
+
   " Use Vim settings, rather then Vi settings.
   " This setting must be as early as possible, as it has side effects.
   set nocompatible
@@ -91,6 +107,8 @@
 
   set undolevels=200
 
+  setglobal commentstring=#\ %s
+
   set ruler           " Show the line and column number of the cursor position,
                       " separated by a comma.
 
@@ -98,12 +116,25 @@
 
   set laststatus=2    " Always display the status line
 
-"  set autowrite       " Automatically :write before running commands
+  set autowrite       " Automatically :write before running commands
 
   set autoread        " Watch for file changes
 
   set mouse=a         " Enable the use of the mouse
   set mousehide       " Hide the mouse cursor while typing
+
+  if !has("gui_running") && $DISPLAY == '' || !has("gui")
+    set mouse=
+  endif
+
+  if $TERM =~ '^screen'
+    if exists("+ttymouse") && &ttymouse == ''
+      set ttymouse=xterm
+    endif
+    if $TERM != 'screen.linux' && &t_Co == 8
+      set t_Co=16
+    endif
+  endif
 
   " Movement {
 
@@ -149,10 +180,14 @@
     set cindent
 
     "  turn of for this files:
-    autocmd BufEnter *.html setlocal indentexpr=
-    autocmd BufEnter *.htm setlocal indentexpr=
-    autocmd BufEnter *.xml setlocal indentexpr=
-    autocmd BufEnter *.xsd setlocal indentexpr=
+    "autocmd BufEnter *.html setlocal indentexpr=
+    "autocmd BufEnter *.htm setlocal indentexpr=
+    "autocmd BufEnter *.xml setlocal indentexpr=
+    "autocmd BufEnter *.xsd setlocal indentexpr=
+
+    if exists('+breakindent')
+      set breakindent showbreak=\ +
+    endif
 
   " }
 
@@ -169,14 +204,14 @@
 
     set smartcase       " Override the 'ignorecase' option if the search pattern
                         " contains upper case characters.
+
   " }
 
   " configure syntastic syntax checking to check on open as well as save
   let g:syntastic_check_on_open=1
   let g:syntastic_html_tidy_ignore_errors=[" proprietary attribute \"ng-"]
 
-  " Better copy & paste {
-
+  " Better copy & paste { 
     " Paste Mode On/Off
     " :set paste / :set no paste
     map <F2> :call Paste_on_off()<CR>
@@ -228,7 +263,7 @@
   " }}}2
 
   " Treat <li> and <p> tags like the block tags they are
-  let g:html_indent_tags = 'li\|p'
+  "let g:html_indent_tags = 'li\|p'
 
   set showmatch     " When a bracket is inserted, briefly jump to the matching
                     " one. The jump is only done if the match can be seen on the
@@ -306,8 +341,10 @@ endif
 " -----------------------
 " Set spellfile to location that is guaranteed to exist, can be symlinked to
 " Dropbox or kept in Git and managed outside of thoughtbot/dotfiles using rcm.
-set spellfile=$HOME/.vim-spell-en.utf-8.add
+set spellfile=$HOME/.vim/spell/en.utf-8.add
 " --- }}}2
+
+set spelllang=en,de
 
 " ===== }}}1
 
@@ -437,7 +474,8 @@ set splitright
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-h> <C-w>h
-nnoremap <C-l> <C-w>l
+" unhighlight search highlight with C-L
+nnoremap <silent> <C-l> :nohlsearch<CR><C-l><C-w>l
 " --- }}}2
 
 " Resize windows {{{2
@@ -454,8 +492,8 @@ nnoremap <silent> <Leader>- :exe "resize " . (winheight(0) * 2/3)<CR>
 " =============================================================================
 
 " Easier moving between tabs
-map <Leader>n <esc>:tabprevious<CR>
-map <Leader>m <esc>:tabnext<CR>
+map <Leader>j <esc>:tabprevious<CR>
+map <Leader>k <esc>:tabnext<CR>
 
 " ===== }}}1
 
@@ -574,6 +612,10 @@ nnoremap <silent> <Leader>l :call RunLastSpec()<CR>
 
 " set cmdheight=2
 
+" if exists('+macmeta')
+"   set macmeta
+" endif
+
 " Switch between the last two files {{{2
 " --------------------------------------
 "nnoremap <leader><leader> <c-^>
@@ -630,6 +672,10 @@ augroup vimrcEx
 
   autocmd FileType git,gitcommit setlocal foldmethod=syntax foldlevel=1
   autocmd FileType gitcommit setlocal spell
+
+  autocmd FileType c,cpp setlocal comments-=:// comments+=f://
+  autocmd FileType pl setlocal comments-=:# comments+=f:#
+  autocmd FileType perl setlocal comments-=:# comments+=f:#
 augroup END
 " --- }}}2
 

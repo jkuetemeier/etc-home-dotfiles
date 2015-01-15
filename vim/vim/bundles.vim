@@ -252,13 +252,66 @@
 
   " }
 
+  " unite - Unite and create user interfaces {
+  " -----------------------------------------------------
+  " https://github.com/Shougo/unite.vim
+  " Video: https://www.youtube.com/watch?v=fwqhBSxhGU0&hd=1
+
+    Plugin 'Shougo/unite.vim'
+    Plugin 'Shougo/neomru.vim'
+    Plugin 'Shougo/vimproc.vim'
+
+    " Recently edited files can be searched with <Leader>m
+    nnoremap <silent> <Leader>m :Unite -buffer-name=recent -winheight=10 file_mru<cr>
+
+    " Open buffer can be navigated with <Leader>b
+    nnoremap <silent> <Leader>b :Unite -buffer-name=buffer -winheight=10 buffer<cr>
+
+    " File searching like ctrlp
+    nnoremap <C-p> :Unite file_rec/async<cr>
+
+    " Content searching like ack.vim (or ag.vim)
+    nnoremap <space>/ :Unite grep:.<cr>
+
+    " Yank history like yankring/yankstack
+    let g:unite_source_history_yank_enable = 1
+    nnoremap <space>y :Unite history/yank<cr>
+
+    " Buffer switching like LustyJuggler
+    nnoremap <space>s :Unite -quick-match buffer<cr>
+
+    " "Unite
+    " call unite#filters#matcher_default#use(['matcher_fuzzy'])
+    " call unite#filters#sorter_default#use(['sorter_rank'])
+    " "call unite#custom#source('file_rec/async','sorters','sorter_rank', )
+    " " replacing unite with ctrl-p
+    " let g:unite_data_directory='~/.vim/.cache/unite'
+    " let g:unite_enable_start_insert=1
+    " let g:unite_source_history_yank_enable=1
+    " let g:unite_prompt='» '
+    " let g:unite_split_rule = 'botright'
+    " if executable('ag')
+    "   let g:unite_source_grep_command='ag'
+    "   let g:unite_source_grep_default_opts='--nocolor --nogroup -S -C4'
+    "   let g:unite_source_grep_recursive_opt=''
+    " endif
+    " nnoremap <silent> <Leader>p :Unite -auto-resize file file_mru file_rec<cr>
+
+  " }
   " ctrlp.vim - Fuzzy file, buffer, mru, tag, etc finder {
-  " ---------------------------------------------------------
+  " ------------------------------------------------------
 
-    Plugin 'kien/ctrlp.vim'
+    " Plugin 'kien/ctrlp.vim'
+    "
+    " let g:ctrlp_map = '<c-p>'
+    " let g:ctrlp_cmd = 'CtrlP'
 
-    let g:ctrlp_map = '<c-p>'
-    let g:ctrlp_cmd = 'CtrlP'
+  " }
+
+  " vim-dispatch - asynchronous build and test dispatcher {
+  " -------------------------------------------------------
+
+    Plugin 'tpope/vim-dispatch'
 
   " }
 
@@ -275,6 +328,16 @@
 
     " http://www.vim.org/scripts/script.php?script_id=1697
     Plugin 'tpope/vim-surround'
+
+    " for details see:
+    " https://github.com/tpope/vim-surround/blob/master/doc/surround.txt
+
+    let g:surround_{char2nr('-')} = "<% \r %>"
+    let g:surround_{char2nr('=')} = "<%= \r %>"
+    let g:surround_{char2nr('8')} = "/* \r */"
+    let g:surround_{char2nr('s')} = " \r"
+    let g:surround_{char2nr('^')} = "/^\r$/"
+    let g:surround_indent = 1
 
   " }
 
@@ -354,11 +417,23 @@
 
   " }
 
-  " vim-gitgutter - shows a git diff in the gutter {
+  " vim-livedown - Vim Plugin for Livedown (Preview Markdown) {
   " ---------------------------------------
 
-    Plugin 'airblade/vim-gitgutter'
+    " Requirements: npm install -g livedown
 
+    Plugin 'shime/vim-livedown'
+
+    " should markdown preview get shown automatically upon opening markdown buffer
+    let g:livedown_autorun = 0
+
+    " should the browser window pop-up upon previewing
+    let g:livedown_open = 1
+
+    " the port on which Livedown server will run
+    let g:livedown_port = 1337
+
+    map gm :call LivedownPreview()<CR>
   " }
 
 " }
