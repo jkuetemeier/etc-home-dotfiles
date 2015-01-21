@@ -233,12 +233,14 @@ symlink_src_dst_files
 # Zsh {{{1
 # ========
 
-SRC_FILES=( "$SRC/zsh/zshrc" "$SRC/zsh/zsh" "$SRC/zsh/zshenv" )
-DST_FILES=( "$DEST/.zshrc" "$DEST/.zsh" "$DEST/.zshenv" )
+echo "--- ZSH: install zsh with install-zsh.sh ---"
 
-# do not require screen - it's replaced with tmux
-check_for 'zsh' 'zsh'
-symlink_src_dst_files
+# SRC_FILES=( "$SRC/zsh/zshrc" "$SRC/zsh/zsh" "$SRC/zsh/zshenv" )
+# DST_FILES=( "$DEST/.zshrc" "$DEST/.zsh" "$DEST/.zshenv" )
+#
+# # do not require screen - it's replaced with tmux
+# check_for 'zsh' 'zsh'
+# symlink_src_dst_files
 
 # ===== }}}1
 
