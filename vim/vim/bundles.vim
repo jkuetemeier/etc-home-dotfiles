@@ -131,20 +131,14 @@ NeoBundle 'Shougo/vimproc.vim', {
 
   " }
 
-  " numbers.vim - is a vim plugin for better line numbers {
-  " --------------------------------------------------------------
-
-    NeoBundle 'myusuf3/numbers.vim'
-
-    let g:numbers_exclude = ['unite', 'tagbar', 'startify', 'gundo', 'vimshell', 'w3m', 'tagbar', 'gundo', 'nerdtree', 'Vundle']
-
-  " }
-
   " neo-snippet plugin contains neocomplcache snippets source {
   " --------------------------------------------------------------
 
     NeoBundle 'Shougo/neosnippet.vim'
     NeoBundle 'Shougo/neosnippet-snippets'
+    " Bootstrap snippets
+    NeoBundle 'chrisgillis/vim-bootstrap3-snippets'
+    NeoBundle 'git@git.kuetemeier.net:kuetemeiernet/knet-vim-snippets.git'
 
     " NeoBundle key-mappings.
     " imap <leader>.     <Plug>(neosnippet_expand_or_jump)
@@ -167,10 +161,6 @@ NeoBundle 'Shougo/vimproc.vim', {
     if has('conceal')
       set conceallevel=2 concealcursor=i
     endif
-
-    " Bootstrap snippets
-    NeoBundle 'chrisgillis/vim-bootstrap3-snippets'
-    NeoBundle 'git@git.kuetemeier.net:kuetemeiernet/knet-vim-snippets.git'
 
   " }
 
@@ -333,15 +323,6 @@ NeoBundle 'Shougo/vimproc.vim', {
     " nnoremap <silent> <Leader>p :Unite -auto-resize file file_mru file_rec<cr>
 
   " }
-  " ctrlp.vim - Fuzzy file, buffer, mru, tag, etc finder {
-  " ------------------------------------------------------
-
-    " NeoBundle 'kien/ctrlp.vim'
-    "
-    " let g:ctrlp_map = '<c-p>'
-    " let g:ctrlp_cmd = 'CtrlP'
-
-  " }
 
   " vim-dispatch - asynchronous build and test dispatcher {
   " -------------------------------------------------------
@@ -379,7 +360,6 @@ NeoBundle 'Shougo/vimproc.vim', {
   " TComment - An extensible & universal comment vim-plugin {
   " that also handles embedded filetypes
 
-    "NeoBundle 'scrooloose/nerdcommenter'
     NeoBundle 'tomtom/tcomment_vim'
 
     " comment and uncomment with <Leader>c
@@ -402,14 +382,6 @@ NeoBundle 'Shougo/vimproc.vim', {
     NeoBundle 'junegunn/goyo.vim'
     NeoBundle 'amix/vim-zenroom2'
     nnoremap <silent> <leader>z :Goyo<cr>
-
-  " }
-
-  " Multiple Cursors - True Sublime Text style multiple selections for Vim {
-  " ---------------------------------------------------------------------------
-  " https://github.com/terryma/vim-multiple-cursors
-
-    NeoBundle 'terryma/vim-multiple-cursors'
 
   " }
 
@@ -452,23 +424,45 @@ NeoBundle 'Shougo/vimproc.vim', {
 
   " }
 
+
+" }
+
+" Candidates for local usage {
+" ==========================
+
+  NeoBundle 'mtth/scratch.vim'
+
+  " NeoBundle 'gcmt/wildfire.vim'
+
+  " -- Multiple Cursors - True Sublime Text style multiple selections for Vim
+  " NeoBundle 'terryma/vim-multiple-cursors'
+
+  " -- numbers.vim - is a vim plugin for better line numbers
+  " NeoBundle 'myusuf3/numbers.vim'
+  " let g:numbers_exclude = ['unite', 'tagbar', 'startify', 'gundo', 'vimshell', 'w3m', 'tagbar', 'gundo', 'nerdtree', 'Vundle']
+
+  " -- ctrlp.vim - Fuzzy file, buffer, mru, tag, etc finder
+  " NeoBundle 'kien/ctrlp.vim'
+  " let g:ctrlp_map = '<c-p>'
+  " let g:ctrlp_cmd = 'CtrlP'
+
   " vim-livedown - Vim NeoBundle for Livedown (Preview Markdown) {
   " ---------------------------------------
 
-    " Requirements: npm install -g livedown
-
-    NeoBundle 'shime/vim-livedown'
-
-    " should markdown preview get shown automatically upon opening markdown buffer
-    let g:livedown_autorun = 0
-
-    " should the browser window pop-up upon previewing
-    let g:livedown_open = 1
-
-    " the port on which Livedown server will run
-    let g:livedown_port = 1337
-
-    map gm :call LivedownPreview()<CR>
+    " " Requirements: npm install -g livedown
+    "
+    " NeoBundle 'shime/vim-livedown'
+    "
+    " " should markdown preview get shown automatically upon opening markdown buffer
+    " let g:livedown_autorun = 0
+    "
+    " " should the browser window pop-up upon previewing
+    " let g:livedown_open = 1
+    "
+    " " the port on which Livedown server will run
+    " let g:livedown_port = 1337
+    "
+    " map gm :call LivedownPreview()<CR>
   " }
 
 " }
