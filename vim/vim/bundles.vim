@@ -147,9 +147,13 @@ NeoBundle 'Shougo/vimproc.vim', {
     NeoBundle 'Shougo/neosnippet-snippets'
 
     " NeoBundle key-mappings.
-    imap <leader>.     <Plug>(neosnippet_expand_or_jump)
-    smap <leader>.     <Plug>(neosnippet_expand_or_jump)
-    xmap <leader>.     <Plug>(neosnippet_expand_target)
+    " imap <leader>.     <Plug>(neosnippet_expand_or_jump)
+    " smap <leader>.     <Plug>(neosnippet_expand_or_jump)
+    " xmap <leader>.     <Plug>(neosnippet_expand_target)
+
+    imap <leader><TAB>     <Plug>(neosnippet_expand_or_jump)
+    smap <leader><TAB>     <Plug>(neosnippet_expand_or_jump)
+    xmap <leader><TAB>     <Plug>(neosnippet_expand_target)
 
     " SuperTab like snippets behavior.
     imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
@@ -166,10 +170,11 @@ NeoBundle 'Shougo/vimproc.vim', {
 
     " Bootstrap snippets
     NeoBundle 'chrisgillis/vim-bootstrap3-snippets'
+    NeoBundle 'git@git.kuetemeier.net:kuetemeiernet/knet-vim-snippets.git'
 
   " }
 
-  " neo-snippet plugin contains neocomplcache snippets source {
+  " neo-complete - Next generation completion framework after neocomplcache {
   " --------------------------------------------------------------
 
     " use https://github.com/Shougo/neocomplcache.vim if your vim does not have
