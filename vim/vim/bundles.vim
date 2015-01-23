@@ -141,9 +141,9 @@ NeoBundle 'Shougo/vimproc.vim', {
     NeoBundle 'git@git.kuetemeier.net:kuetemeiernet/knet-vim-snippets.git'
 
     " NeoBundle key-mappings.
-    " imap <leader>.     <Plug>(neosnippet_expand_or_jump)
-    " smap <leader>.     <Plug>(neosnippet_expand_or_jump)
-    " xmap <leader>.     <Plug>(neosnippet_expand_target)
+    imap <leader>.     <Plug>(neosnippet_expand_or_jump)
+    smap <leader>.     <Plug>(neosnippet_expand_or_jump)
+    xmap <leader>.     <Plug>(neosnippet_expand_target)
 
     imap <leader><TAB>     <Plug>(neosnippet_expand_or_jump)
     smap <leader><TAB>     <Plug>(neosnippet_expand_or_jump)
