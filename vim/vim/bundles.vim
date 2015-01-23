@@ -18,24 +18,55 @@
 
 " }
 
-" Vundle plug-in management {
+" NeoBundle plug-in management {
 " ===========================
 
-  " Plug-ins are handled by Vundle, the plug-in manager for Vim
-  " https://github.com/gmarik/Vundle.vim
+" Note: Skip initialization for vim-tiny or vim-small.
+if !1 | finish | endif
 
-  " vundle needs the vim mode
+if has('vim_starting')
   if &compatible
-    set nocompatible
-  end
+    set nocompatible               " Be iMproved
+  endif
 
-  " run vundle
-  filetype off
-  set rtp+=~/.vim/bundle/Vundle.vim/
-  call vundle#begin()
+  " Required:
+  set runtimepath+=~/.vim/bundle/neobundle.vim/
+endif
 
-  " Let Vundle manage Vundle
-  Plugin 'gmarik/Vundle.vim'
+" Required:
+call neobundle#begin(expand('~/.vim/bundle/'))
+
+" Let NeoBundle manage NeoBundle
+" Required:
+NeoBundleFetch 'Shougo/neobundle.vim'
+
+" My Bundles here:
+" Refer to |:NeoBundle-examples|.
+" Note: You don't set neobundle setting in .gvimrc!
+
+call neobundle#end()
+
+" Required:
+filetype plugin indent on
+
+" If there are uninstalled bundles found on startup,
+" this will conveniently prompt you to install them.
+NeoBundleCheck
+
+let g:make = 'gmake'
+if system('uname -o') =~ '^GNU/'
+  let g:make = 'make'
+endif
+
+NeoBundle 'Shougo/vimproc.vim', {
+\ 'build' : {
+\     'windows' : 'tools\\update-dll-mingw',
+\     'cygwin' : 'make -f make_cygwin.mak',
+\     'mac' : 'make -f make_mac.mak',
+\     'linux' : 'make',
+\     'unix' : 'gmake',
+\    },
+\ }
 
 " }
 
@@ -46,7 +77,7 @@
   " ----------------------------------------------
   " https://github.com/scrooloose/nerdtree
 
-    Plugin 'scrooloose/nerdtree'
+    NeoBundle 'scrooloose/nerdtree'
 
     " show hidden files
     let NERDTreeShowHidden=1
@@ -67,7 +98,7 @@
   " -------------------------------------------------------------
   " https://github.com/gregsexton/MatchTag
 
-    Plugin 'gregsexton/MatchTag'
+    NeoBundle 'gregsexton/MatchTag'
 
   " }
 
@@ -75,7 +106,7 @@
   " -------------------------------------------------------------------------
 
     " on Mac: brew install ctag
-    Plugin 'majutsushi/tagbar'
+    NeoBundle 'majutsushi/tagbar'
     nmap <F8> :TagbarToggle<CR>
 
   " }
@@ -83,7 +114,7 @@
   " Airline - lean & mean status/tabline for vim that's light as air {
   " ---------------------------------------------------------------------
 
-    Plugin 'bling/vim-airline'
+    NeoBundle 'bling/vim-airline'
 
     set noshowmode
 
@@ -103,7 +134,7 @@
   " numbers.vim - is a vim plugin for better line numbers {
   " --------------------------------------------------------------
 
-    Plugin 'myusuf3/numbers.vim'
+    NeoBundle 'myusuf3/numbers.vim'
 
     let g:numbers_exclude = ['unite', 'tagbar', 'startify', 'gundo', 'vimshell', 'w3m', 'tagbar', 'gundo', 'nerdtree', 'Vundle']
 
@@ -112,10 +143,10 @@
   " neo-snippet plugin contains neocomplcache snippets source {
   " --------------------------------------------------------------
 
-    Plugin 'Shougo/neosnippet.vim'
-    Plugin 'Shougo/neosnippet-snippets'
+    NeoBundle 'Shougo/neosnippet.vim'
+    NeoBundle 'Shougo/neosnippet-snippets'
 
-    " Plugin key-mappings.
+    " NeoBundle key-mappings.
     imap <leader>.     <Plug>(neosnippet_expand_or_jump)
     smap <leader>.     <Plug>(neosnippet_expand_or_jump)
     xmap <leader>.     <Plug>(neosnippet_expand_target)
@@ -134,7 +165,7 @@
     endif
 
     " Bootstrap snippets
-    Plugin 'chrisgillis/vim-bootstrap3-snippets'
+    NeoBundle 'chrisgillis/vim-bootstrap3-snippets'
 
   " }
 
@@ -144,7 +175,7 @@
     " use https://github.com/Shougo/neocomplcache.vim if your vim does not have
     " lua compiled in
 
-    Plugin 'Shougo/neocomplete.vim'
+    NeoBundle 'Shougo/neocomplete.vim'
 
     "Note: This option must set it in .vimrc(_vimrc).  NOT IN .gvimrc(_gvimrc)!
     " Disable AutoComplPop.
@@ -170,7 +201,7 @@
     endif
     let g:neocomplete#keyword_patterns['default'] = '\h\w*'
 
-    " Plugin key-mappings.
+    " NeoBundle key-mappings.
     inoremap <expr><C-g>     neocomplete#undo_completion()
     inoremap <expr><C-l>     neocomplete#complete_common_string()
 
@@ -235,7 +266,7 @@
   " Syntastic - Syntax checking hacks for vim {
   " ----------------------------------------------
 
-    Plugin 'scrooloose/syntastic'
+    NeoBundle 'scrooloose/syntastic'
 
     " This does what it says on the tin. It will check your file on open too, not just on save.
     " You might not want this, so just leave it out if you don't.
@@ -248,7 +279,7 @@
   " vim-coffee-script - CoffeeScript support for vim {
   " -----------------------------------------------------
 
-    Plugin 'kchmck/vim-coffee-script'
+    NeoBundle 'kchmck/vim-coffee-script'
 
   " }
 
@@ -257,9 +288,8 @@
   " https://github.com/Shougo/unite.vim
   " Video: https://www.youtube.com/watch?v=fwqhBSxhGU0&hd=1
 
-    Plugin 'Shougo/unite.vim'
-    Plugin 'Shougo/neomru.vim'
-    Plugin 'Shougo/vimproc.vim'
+    NeoBundle 'Shougo/unite.vim'
+    NeoBundle 'Shougo/neomru.vim'
 
     " Recently edited files can be searched with <Leader>m
     nnoremap <silent> <Leader>m :Unite -buffer-name=recent -winheight=10 file_mru<cr>
@@ -301,7 +331,7 @@
   " ctrlp.vim - Fuzzy file, buffer, mru, tag, etc finder {
   " ------------------------------------------------------
 
-    " Plugin 'kien/ctrlp.vim'
+    " NeoBundle 'kien/ctrlp.vim'
     "
     " let g:ctrlp_map = '<c-p>'
     " let g:ctrlp_cmd = 'CtrlP'
@@ -311,7 +341,7 @@
   " vim-dispatch - asynchronous build and test dispatcher {
   " -------------------------------------------------------
 
-    Plugin 'tpope/vim-dispatch'
+    NeoBundle 'tpope/vim-dispatch'
 
   " }
 
@@ -319,7 +349,7 @@
   " --------------------------------------------------------------
 
     " http://www.vim.org/scripts/script.php?script_id=2975
-    Plugin 'tpope/vim-fugitive'
+    NeoBundle 'tpope/vim-fugitive'
 
   " }
 
@@ -327,7 +357,7 @@
   " --------------------------------------------------
 
     " http://www.vim.org/scripts/script.php?script_id=1697
-    Plugin 'tpope/vim-surround'
+    NeoBundle 'tpope/vim-surround'
 
     " for details see:
     " https://github.com/tpope/vim-surround/blob/master/doc/surround.txt
@@ -344,8 +374,8 @@
   " TComment - An extensible & universal comment vim-plugin {
   " that also handles embedded filetypes
 
-    "Plugin 'scrooloose/nerdcommenter'
-    Plugin 'tomtom/tcomment_vim'
+    "NeoBundle 'scrooloose/nerdcommenter'
+    NeoBundle 'tomtom/tcomment_vim'
 
     " comment and uncomment with <Leader>c
     map <Leader>c <C-_><C-_>
@@ -356,7 +386,7 @@
   " ---------------------------------------------------------
 
     " emmet for vim: http://emmet.io/ http://mattn.github.io/emmet-vim
-    Plugin 'mattn/emmet-vim'
+    NeoBundle 'mattn/emmet-vim'
 
   " }
 
@@ -364,8 +394,8 @@
   " -------------------------------
 
     " Zen Editing
-    Plugin 'junegunn/goyo.vim'
-    Plugin 'amix/vim-zenroom2'
+    NeoBundle 'junegunn/goyo.vim'
+    NeoBundle 'amix/vim-zenroom2'
     nnoremap <silent> <leader>z :Goyo<cr>
 
   " }
@@ -374,14 +404,14 @@
   " ---------------------------------------------------------------------------
   " https://github.com/terryma/vim-multiple-cursors
 
-    Plugin 'terryma/vim-multiple-cursors'
+    NeoBundle 'terryma/vim-multiple-cursors'
 
   " }
 
   " Easy Motion - Vim motion on speed! {
   " ---------------------------------------
 
-    Plugin 'Lokaltog/vim-easymotion'
+    NeoBundle 'Lokaltog/vim-easymotion'
 
     " Gif config
     "map  / <Plug>(easymotion-sn)
@@ -401,10 +431,10 @@
     " better JavaScript editing
     " http://oli.me.uk/2013/06/29/equipping-vim-for-javascript/
 
-    Plugin 'jelera/vim-javascript-syntax'
-    Plugin 'pangloss/vim-javascript'
-    Plugin 'nathanaelkane/vim-indent-guides'
-    Plugin 'Raimondi/delimitMate'
+    NeoBundle 'jelera/vim-javascript-syntax'
+    NeoBundle 'pangloss/vim-javascript'
+    NeoBundle 'nathanaelkane/vim-indent-guides'
+    NeoBundle 'Raimondi/delimitMate'
     " imap <C-c> <CR><Esc>O
 
     " These are the tweaks I apply to YCM's config, you don't need them but they might help.
@@ -413,16 +443,16 @@
     let g:ycm_confirm_extra_conf=0
     set completeopt-=preview
 
-    Plugin 'marijnh/tern_for_vim'
+    NeoBundle 'marijnh/tern_for_vim'
 
   " }
 
-  " vim-livedown - Vim Plugin for Livedown (Preview Markdown) {
+  " vim-livedown - Vim NeoBundle for Livedown (Preview Markdown) {
   " ---------------------------------------
 
     " Requirements: npm install -g livedown
 
-    Plugin 'shime/vim-livedown'
+    NeoBundle 'shime/vim-livedown'
 
     " should markdown preview get shown automatically upon opening markdown buffer
     let g:livedown_autorun = 0
@@ -447,10 +477,3 @@
 
 " }
 
-" Vundle END {
-" ============
-
-  call vundle#end()
-  filetype on
-
-" }

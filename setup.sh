@@ -36,9 +36,17 @@ This script can install the config files local ($HOME) or global.
 
 OPTIONS:
    -h      Show this message
-   -l      install local ($HOME)
-   -g      install global (/etc)
+
+   -l      Install local ($HOME)
+   In the future: -g Install global (/etc)
+
    -v      Verbose
+   -f      force all steps (don't ask)
+
+   -s      Install Screen
+   -t      Install Tmux
+   -m      Install Vim
+   -z      Install Zsh
 
 EOF
 }
@@ -51,12 +59,40 @@ GLOBAL=
 LOCAL=
 VERBOSE=
 NAME=jk-etc-home-dotfiles
+FORCE=
+I_VIM=
+I_ZSH=
+I_TMUX=
+I_SCREEN=
 
-while getopts “ghlv” OPTION
+while getopts “aghlvmzts” OPTION
 do
 case $OPTION in
+ a)
+     I_VIM=1
+     I_ZSH=1
+     I_TMUX=1
+     I_SCREEN=1
+     ;;
+ f)
+     FORCE=1
+     ;;
+ m)
+     I_VIM=1
+     ;;
+ z)
+     I_ZSH=1
+     ;;
+ t)
+     I_TMUX=1
+     ;;
+ s)
+     I_SCREEN=1
+     ;;
  g)
      GLOBAL=1
+     echo "Not implemented yet."
+     exit 1
      ;;
  h)
      usage
@@ -93,7 +129,7 @@ fi
 if [[ -n $VERBOSE ]]; then
   if [[ -n $GLOBAL ]]; then
     echo "$NAME - starting global install..."
-  else 
+  else
     echo "$NAME - starting local install..."
   fi
 fi
@@ -205,110 +241,175 @@ check_for() { # check if $1 is installed on system {{{2
   fi
 } # }}}2
 
+check_and_ask() { # check if $1 exists ask user (or force) {{{2
+# -----------------------------------------------------
+  if [ -z "$1" ]; then
+    echo "no file / directory is given"
+    exit -1
+  fi
+  if [[ -e $1 ]]; then
+    if [[ -d $1 ]]; then
+      echo "Directory '$1' already exists."
+    else
+      echo "File '$1' already exists."
+    fi
+    read -p "Shall I (i)gnore, (d)elete and replace, (b)ackup and replace it? Or (a)bort?" -n 1 -r
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+      exit 1
+    fi
+    return 1
+  fi
+  return 0
+}
+# }}}2
+
 # ===== }}}1
 
 # Tmux {{{1
 # =========
 
-SRC_FILES=( "$SRC/tmux/tmux.conf" "$SRC/tmux/tmux-osx.conf" )
-DST_FILES=( "$DEST/.tmux.conf" "$DEST/.tmux-osx.conf")
+i_tmux() {
+  SRC_FILES=( "$SRC/tmux/tmux.conf" "$SRC/tmux/tmux-osx.conf" )
+  DST_FILES=( "$DEST/.tmux.conf" "$DEST/.tmux-osx.conf")
 
-check_for 'tmux' 'TMux'
-symlink_src_dst_files
+  check_for 'tmux' 'TMux'
+  symlink_src_dst_files
+}
 
 # ===== }}}1
 
 # Screen {{{1
 # ===========
 
-SRC_FILES=( "$SRC/screen/screenrc" )
-DST_FILES=( "$DEST/.screenrc" )
+i_screen() {
+  SRC_FILES=( "$SRC/screen/screenrc" )
+  DST_FILES=( "$DEST/.screenrc" )
 
-# do not require screen - it's replaced with tmux
-check_for 'screen' 'Screen' 1
-symlink_src_dst_files
+  # do not require screen - it's replaced with tmux
+  check_for 'screen' 'Screen' 1
+  symlink_src_dst_files
+}
 
 # ===== }}}1
 
 # Zsh {{{1
 # ========
 
-echo "--- ZSH: install zsh with install-zsh.sh ---"
+i_zsh() {
+  echo "--- ZSH: install zsh with install-zsh.sh ---"
 
-# SRC_FILES=( "$SRC/zsh/zshrc" "$SRC/zsh/zsh" "$SRC/zsh/zshenv" )
-# DST_FILES=( "$DEST/.zshrc" "$DEST/.zsh" "$DEST/.zshenv" )
-#
-# # do not require screen - it's replaced with tmux
-# check_for 'zsh' 'zsh'
-# symlink_src_dst_files
+  # SRC_FILES=( "$SRC/zsh/zshrc" "$SRC/zsh/zsh" "$SRC/zsh/zshenv" )
+  # DST_FILES=( "$DEST/.zshrc" "$DEST/.zsh" "$DEST/.zshenv" )
+  #
+  # # do not require screen - it's replaced with tmux
+  # check_for 'zsh' 'zsh'
+  # symlink_src_dst_files
+}
 
 # ===== }}}1
 
 # Vim {{{1
 # ========
 
-#FILES="$dir/dotfiles/*"
-SRC_FILES=( "$SRC/vim/vimrc" )
-DST_FILES=( "$DEST/.vimrc" )
+i_vim() {
+  #FILES="$dir/dotfiles/*"
+  SRC_FILES=( "$SRC/vim/vimrc" )
+  DST_FILES=( "$DEST/.vimrc" )
 
-check_for 'vim'
-check_for 'git'
+  check_for 'vim'
+  check_for 'git'
 
-###
-# prepare vim directory
+  ###
+  # prepare vim directory
 
-vimdir="$DEST/.vim"
+  vimdir="$DEST/.vim"
 
-# check for backup dir
-if [[ -e $vimdir.$TODAY ]]; then
-  read -p "$vimdir.$TODAY already exists... continue?(y/n)" -n 1 -r
-  echo    # (optional) move to a new line
-  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    exit 1
+  # ensure vimdir exists
+  mkdir -p $vimdir
+
+  testit(){
+    return 0
+  }
+
+  testit
+  if [ $? == 0 ]; then
+    echo "Yes"
+  else
+    echo "No"
   fi
-  rm -rf "$vimdir.$TODAY"
-fi
+exit 0
+  check_rm_dir "$vimdir/bundle"
+  check_rm_dir "$vimdir/colors"
 
-[ -e "$vimdir" ] && mv $MVARG "$vimdir" "$vimdir.$TODAY"
+  curl https://raw.githubusercontent.com/Shougo/neobundle.vim/master/bin/install.sh | sh
 
-mkdir -p $vimdir/bundle
-mkdir -p $vimdir/colors
-mkdir -p $vimdir/spell
-mkdir -p $vimdir/view
+  vim +NeoBundleInstall
 
-FILES="$SRC/vim/colors/*"
-
-for rcfile in $FILES; do
-  file=${rcfile##*/}
-  destination="$vimdir/colors/$file"
-  ln -s "$rcfile" "$destination"
-done
-
-FILES="$SRC/vim/spell/*"
-
-for rcfile in $FILES; do
-  file=${rcfile##*/}
-  destination="$vimdir/spell/$file"
-  ln -s "$rcfile" "$destination"
-done
-
-FILES="$SRC/vim/vim/*"
-
-for rcfile in $FILES; do
-  file=${rcfile##*/}
-  destination="$vimdir/$file"
-  ln -s "$rcfile" "$destination"
-done
-
-symlink_src_dst_files
-
-git clone https://github.com/gmarik/Vundle.vim.git "$vimdir/bundle/Vundle.vim"
-
-vim +PluginInstall +qall
-
-cd "$vimdir/bundle/tern_for_vim" && npm install
+  # # check for backup dir
+  # if [[ -e $vimdir.$TODAY ]]; then
+  #   read -p "$vimdir.$TODAY already exists... continue?(y/n)" -n 1 -r
+  #   echo    # (optional) move to a new line
+  #   if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+  #     exit 1
+  #   fi
+  #   rm -rf "$vimdir.$TODAY"
+  # fi
+  #
+  # [ -e "$vimdir" ] && mv $MVARG "$vimdir" "$vimdir.$TODAY"
+  #
+  # mkdir -p $vimdir/bundle
+  # mkdir -p $vimdir/colors
+  # mkdir -p $vimdir/spell
+  # mkdir -p $vimdir/view
+  #
+  # FILES="$SRC/vim/colors/*"
+  #
+  # for rcfile in $FILES; do
+  #   file=${rcfile##*/}
+  #   destination="$vimdir/colors/$file"
+  #   ln -s "$rcfile" "$destination"
+  # done
+  #
+  # FILES="$SRC/vim/spell/*"
+  #
+  # for rcfile in $FILES; do
+  #   file=${rcfile##*/}
+  #   destination="$vimdir/spell/$file"
+  #   ln -s "$rcfile" "$destination"
+  # done
+  #
+  # FILES="$SRC/vim/vim/*"
+  #
+  # for rcfile in $FILES; do
+  #   file=${rcfile##*/}
+  #   destination="$vimdir/$file"
+  #   ln -s "$rcfile" "$destination"
+  # done
+  #
+  # symlink_src_dst_files
+  #
+  # git clone https://github.com/gmarik/Vundle.vim.git "$vimdir/bundle/Vundle.vim"
+  #
+  # vim +PluginInstall +qall
+  #
+  # cd "$vimdir/bundle/tern_for_vim" && npm install
+  #
+}
 
 # ===== }}}1
+
+if [[ $I_VIM ]]; then
+  i_vim
+fi
+if [[ $I_ZSH ]]; then
+  i_zsh
+fi
+if [[ $I_TMUX ]]; then
+  i_tmux
+fi
+if [[ $I_SCREEN ]]; then
+  i_screen
+fi
 
 # TODO:  {{{1
 exit 0
