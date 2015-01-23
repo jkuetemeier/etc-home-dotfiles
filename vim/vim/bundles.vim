@@ -102,6 +102,14 @@ NeoBundle 'Shougo/vimproc.vim', {
 
   " }
 
+  " MatchIt - Vim's MatchParen for HTML tags (HTML editing) {
+  " -------------------------------------------------------------
+  " https://github.com/gregsexton/MatchTag
+
+    NeoBundle 'gtmhedberg/matchit'
+
+  " }
+
   " Tagbar - Vim plugin that displays tags in a window, ordered by scope {
   " -------------------------------------------------------------------------
 
