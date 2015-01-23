@@ -211,7 +211,7 @@
   let g:syntastic_check_on_open=1
   let g:syntastic_html_tidy_ignore_errors=[" proprietary attribute \"ng-"]
 
-  " Better copy & paste { 
+  " Better copy & paste {
     " Paste Mode On/Off
     " :set paste / :set no paste
     map <F2> :call Paste_on_off()<CR>
@@ -421,7 +421,7 @@ vnoremap Q gq
 
     " A column with the specified width is shown at the side of the window
     " which indicates open and closed folds.
-    set foldcolumn=1
+    set foldcolumn=0
 
     " autofold anything (but I can still fold manually).
     "  set foldlevel=0
@@ -445,16 +445,16 @@ vnoremap Q gq
     set foldtext=NeatFoldText()
 
     " Code folding options
-    nmap <leader>f0 :set foldlevel=0<CR>
-    nmap <leader>f1 :set foldlevel=1<CR>
-    nmap <leader>f2 :set foldlevel=2<CR>
-    nmap <leader>f3 :set foldlevel=3<CR>
-    nmap <leader>f4 :set foldlevel=4<CR>
-    nmap <leader>f5 :set foldlevel=5<CR>
-    nmap <leader>f6 :set foldlevel=6<CR>
-    nmap <leader>f7 :set foldlevel=7<CR>
-    nmap <leader>f8 :set foldlevel=8<CR>
-    nmap <leader>f9 :set foldlevel=9<CR>
+    nmap <leader>f0 :set foldlevel=0<CR>:set foldcolumn=0<CR>
+    nmap <leader>f1 :set foldlevel=1<CR>:set foldcolumn=1<CR>
+    nmap <leader>f2 :set foldlevel=2<CR>:set foldcolumn=3<CR>
+    nmap <leader>f3 :set foldlevel=3<CR>:set foldcolumn=4<CR>
+    nmap <leader>f4 :set foldlevel=4<CR>:set foldcolumn=5<CR>
+    nmap <leader>f5 :set foldlevel=5<CR>:set foldcolumn=5<CR>
+    nmap <leader>f6 :set foldlevel=6<CR>:set foldcolumn=5<CR>
+    nmap <leader>f7 :set foldlevel=7<CR>:set foldcolumn=5<CR>
+    nmap <leader>f8 :set foldlevel=8<CR>:set foldcolumn=5<CR>
+    nmap <leader>f9 :set foldlevel=9<CR>:set foldcolumn=5<CR>
 
   endif
 
