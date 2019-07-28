@@ -1,3 +1,7 @@
+# Archived
+
+See https://github.com/kuetemeier/home-files for a more recent version.
+
 # jk-etc-home-dotfiles
 Configuration and dotfiles for zsh, vim, tmux, screen and more... for /etc and
 ~/ (home) usage
